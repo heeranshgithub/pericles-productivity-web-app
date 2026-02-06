@@ -21,7 +21,7 @@ export function TaskItem({ task, onToggle, onEdit, onDelete }: TaskItemProps) {
   return (
     <div
       className={cn(
-        'group flex items-start gap-4 rounded-lg border border-border bg-card px-4 py-3.5 transition-all hover:shadow-sm',
+        'group flex items-start gap-4 rounded-lg border border-border bg-card p-3 hover:bg-accent/50 transition-colors duration-150',
         isCompleted && 'opacity-75'
       )}
     >
@@ -52,15 +52,15 @@ export function TaskItem({ task, onToggle, onEdit, onDelete }: TaskItemProps) {
           <div className="flex shrink-0 items-center gap-1">
             <Badge
               variant={isCompleted ? 'secondary' : 'outline'}
-              className="text-[10px] px-1.5 py-0"
+              className="text-[10px] uppercase tracking-wider px-1.5 py-0"
             >
               {isCompleted ? 'Done' : 'Pending'}
             </Badge>
-            <div className="flex opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="flex opacity-0 group-hover:opacity-100 transition-opacity duration-150">
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                className="h-7 w-7 text-muted-foreground hover:text-foreground transition-colors duration-150"
                 onClick={() => onEdit(task)}
               >
                 <Pencil className="h-3.5 w-3.5" />
@@ -68,7 +68,7 @@ export function TaskItem({ task, onToggle, onEdit, onDelete }: TaskItemProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                className="h-7 w-7 text-muted-foreground hover:text-destructive transition-colors duration-150"
                 onClick={() => onDelete(task._id)}
               >
                 <Trash2 className="h-3.5 w-3.5" />
@@ -77,7 +77,7 @@ export function TaskItem({ task, onToggle, onEdit, onDelete }: TaskItemProps) {
           </div>
         </div>
 
-        <p className="mt-2 text-[11px] text-muted-foreground/60">
+        <p className="mt-2 text-xs text-muted-foreground uppercase tracking-wider">
           {formatDistanceToNow(new Date(task.createdAt), { addSuffix: true })}
         </p>
       </div>

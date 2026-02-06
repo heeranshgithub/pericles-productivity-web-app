@@ -106,12 +106,12 @@ export default function TasksPage() {
   };
 
   return (
-    <div className="p-6 lg:p-8 w-full min-h-screen">
-      {/* Page header */}
+    <div className="min-h-screen w-full p-6 lg:p-8">
+      {/* Page Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Tasks</h1>
-          <p className="text-muted-foreground text-sm mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             Manage and track your to-dos.
           </p>
         </div>
@@ -127,52 +127,52 @@ export default function TasksPage() {
         </Button>
       </div>
 
-      {/* Stats row */}
+      {/* Stats Grid */}
       <div className="grid gap-4 grid-cols-2 sm:grid-cols-4 mb-6">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-1 pt-4 px-4">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 pt-4 px-4">
             <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
               Total
             </CardTitle>
             <ListChecks className="h-3.5 w-3.5 text-muted-foreground" />
           </CardHeader>
           <CardContent className="px-4 pb-4">
-            <p className="text-2xl font-bold">{stats?.total ?? 0}</p>
+            <p className="text-2xl font-bold tabular-nums">{stats?.total ?? 0}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-1 pt-4 px-4">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 pt-4 px-4">
             <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
               Pending
             </CardTitle>
             <Clock className="h-3.5 w-3.5 text-amber-500" />
           </CardHeader>
           <CardContent className="px-4 pb-4">
-            <p className="text-2xl font-bold">{stats?.pending ?? 0}</p>
+            <p className="text-2xl font-bold tabular-nums">{stats?.pending ?? 0}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-1 pt-4 px-4">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 pt-4 px-4">
             <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
               Done
             </CardTitle>
             <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
           </CardHeader>
           <CardContent className="px-4 pb-4">
-            <p className="text-2xl font-bold">{stats?.completed ?? 0}</p>
+            <p className="text-2xl font-bold tabular-nums">{stats?.completed ?? 0}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-1 pt-4 px-4">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 pt-4 px-4">
             <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
               Progress
             </CardTitle>
           </CardHeader>
           <CardContent className="px-4 pb-4">
-            <p className="text-2xl font-bold">{completionPercent}%</p>
+            <p className="text-2xl font-bold tabular-nums">{completionPercent}%</p>
             <div className="mt-2 h-1.5 w-full rounded-full bg-muted overflow-hidden">
               <div
-                className="h-full rounded-full bg-emerald-500 transition-all duration-500"
+                className="h-full rounded-full bg-emerald-500 transition-all duration-300"
                 style={{ width: `${completionPercent}%` }}
               />
             </div>
@@ -180,11 +180,11 @@ export default function TasksPage() {
         </Card>
       </div>
 
-      {/* Filter tabs */}
+      {/* Filter Tabs */}
       <Tabs
         value={filter}
         onValueChange={(v) => setFilter(v as 'all' | TaskStatus)}
-        className="mb-5"
+        className="mb-6"
       >
         <TabsList>
           <TabsTrigger value="all" className="gap-1.5">
@@ -214,9 +214,9 @@ export default function TasksPage() {
         </TabsList>
       </Tabs>
 
-      {/* Task list */}
+      {/* Task List */}
       {isLoading ? (
-        <div className="space-y-3">
+        <div className="space-y-2">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
