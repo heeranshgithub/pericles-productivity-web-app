@@ -77,7 +77,7 @@ export function TaskItem({ task, onToggle, onEdit, onDelete }: TaskItemProps) {
           </div>
         </div>
 
-        <p className="mt-2 text-xs text-muted-foreground uppercase tracking-wider">
+        <p className="mt-2 text-[10px] text-muted-foreground">
           {formatDistanceToNow(new Date(task.createdAt), { addSuffix: true })}
         </p>
       </div>
