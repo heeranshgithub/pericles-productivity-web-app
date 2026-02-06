@@ -5,21 +5,22 @@ import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/store/hooks";
 
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, hydrated } = useAppSelector((state) => state.auth);
   const router = useRouter();
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (hydrated && !isAuthenticated) {
       router.push("/auth/login");
     }
-  }, [isAuthenticated, router]);
+  }, [hydrated, isAuthenticated, router]);
 
-  if (!isAuthenticated || !user) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-lg">Loading...</div>
-      </div>
-    );
+  // Keep SSR + first client render consistent: we only decide after hydration.
+  if (!hydrated) {
+    return <div className="min-h-screen bg-background" />;
+  }
+
+  if (!isAuthenticated) {
+    return <div className="min-h-screen bg-background" />;
   }
 
   return <>{children}</>;

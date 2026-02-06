@@ -40,7 +40,7 @@ export default function LoginPage() {
       );
 
       toast.success("Login successful!");
-      router.push("/dashboard");
+      router.push("/dashboard/tasks");
     } catch (error: any) {
       toast.error(error.data?.message || "Login failed");
     }

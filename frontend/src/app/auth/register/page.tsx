@@ -46,7 +46,7 @@ export default function RegisterPage() {
       );
 
       toast.success("Registration successful!");
-      router.push("/dashboard");
+      router.push("/dashboard/tasks");
     } catch (error: any) {
       toast.error(error.data?.message || "Registration failed");
     }
