@@ -1,0 +1,178 @@
+---
+description: Backend coding standards for NestJS with TypeScript
+globs: backend/**/*.ts
+---
+
+# Backend Coding Standards
+
+## Naming Conventions
+
+- Use meaningful, descriptive names that clearly convey purpose
+- Follow **camelCase** for variables and methods (e.g., `findUserById`, `createOrder`, `validatePaymentData`)
+- Follow **PascalCase** for classes and interfaces (e.g., `UserAuthenticationService`, `OrderProcessingModule`)
+- Follow **UPPER_SNAKE_CASE** for constants (e.g., `MAX_RETRY_ATTEMPTS`, `DEFAULT_TIMEOUT`)
+- Be specific with names - prefer `UserAuthenticationService` over `AuthService`, `UsersController` over `UserController`
+- Avoid generic names like `getData`, `process`, `handle`
+
+## Null Safety and Validation
+
+- Always handle null/undefined checks and validate array lengths before operations
+- Use optional chaining (`?.`) and nullish coalescing (`??`) operators where appropriate
+- Validate data before accessing nested properties
+- Use DTOs with class-validator and class-transformer for request validation at the controller level
+
+## Error Handling
+
+- Wrap business logic in try-catch blocks when dealing with:
+  - External services
+  - Database operations
+  - Any error-prone code
+- Skip try-catch for simple, straightforward operations like variable assignments
+- Implement proper error handling with custom exception filters
+- Use built-in HTTP exceptions for consistent API responses:
+  - `BadRequestException`
+  - `NotFoundException`
+  - `UnauthorizedException`
+  - `ForbiddenException`
+  - etc.
+
+## Import Organization
+
+Maintain imports in the following order with an empty line between each group:
+
+1. **Node.js built-in modules** (fs, path, etc.)
+2. **NestJS core imports** (@nestjs/\*)
+3. **Third-party packages** (mongoose, bcrypt, etc.)
+4. **Project-specific imports** (modules, services)
+5. **Relative path imports** (DTOs, interfaces, types)
+
+Example:
+
+```typescript
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+
+import { Model } from 'mongoose';
+import * as bcrypt from 'bcrypt';
+
+import { UsersService } from '../users/users.service';
+import { EmailService } from '../email/email.service';
+
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from './interfaces/user.interface';
+```
+
+## Class Member Organization
+
+Maintain the following order of definitions in NestJS classes:
+
+1. **Decorators and metadata** (@Injectable(), @Controller(), etc.)
+2. **Properties** (private, protected, public)
+3. **Constructor with dependency injection**
+4. **Lifecycle hooks** (onModuleInit, onApplicationBootstrap, etc.)
+5. **Public methods**
+6. **Protected methods**
+7. **Private methods**
+8. **Helper/utility methods**
+
+Example:
+
+```typescript
+@Injectable()
+export class UserAuthenticationService {
+  // 1. Decorators applied to class
+
+  // 2. Properties
+  private readonly saltRounds = 10;
+  protected logger = new Logger(UserAuthenticationService.name);
+
+  // 3. Constructor with DI
+  constructor(
+    @InjectModel(User.name) private userModel: Model<User>,
+    private jwtService: JwtService,
+    private emailService: EmailService
+  ) {}
+
+  // 4. Lifecycle hooks
+  onModuleInit() {
+    this.logger.log('UserAuthenticationService initialized');
+  }
+
+  // 5. Public methods
+  async createUser(createUserDto: CreateUserDto): Promise<User> {
+    try {
+      const hashedPassword = await this.hashPassword(createUserDto.password);
+      const user = new this.userModel({
+        ...createUserDto,
+        password: hashedPassword,
+      });
+      return await user.save();
+    } catch (error) {
+      throw new BadRequestException('Failed to create user');
+    }
+  }
+
+  async findUserById(id: string): Promise<User> {
+    const user = await this.userModel.findById(id).exec();
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+    return user;
+  }
+
+  // 6. Protected methods
+  protected async validateUserCredentials(
+    email: string,
+    password: string
+  ): Promise<boolean> {
+    // validation logic
+    return true;
+  }
+
+  // 7. Private methods
+  private async hashPassword(password: string): Promise<string> {
+    return bcrypt.hash(password, this.saltRounds);
+  }
+
+  // 8. Helper/utility methods
+  private formatUserResponse(user: User) {
+    const { password, ...result } = user.toObject();
+    return result;
+  }
+}
+```
+
+## Comments
+
+- Only add comments for complex business logic, algorithms, or non-obvious implementation details
+- Avoid redundant comments that simply restate what the code does
+- Focus on explaining **why** rather than **what**
+
+## NestJS Best Practices
+
+- Leverage dependency injection properly - avoid creating instances manually
+- Use proper scope based on use case:
+  - `DEFAULT`: Singleton scope (shared across entire application)
+  - `REQUEST`: New instance per request
+  - `TRANSIENT`: New instance each time it's injected
+- Always use DTOs for request validation with class-validator and class-transformer
+- Validate incoming data at the controller level
+- Use descriptive method names that follow RESTful conventions where applicable
+- Implement proper separation of concerns - keep controllers thin, business logic in services
+- Use guards for authentication and authorization
+- Use interceptors for cross-cutting concerns (logging, transformation, caching)
+- Use pipes for data validation and transformation
+
+## Performance and Security
+
+- Implement proper caching strategies for frequently accessed data
+- Use database indexes appropriately
+- Avoid N+1 query problems
+- Never expose sensitive information in error messages
+- Always validate and sanitize user input
+- Use environment variables for configuration (never hardcode secrets)

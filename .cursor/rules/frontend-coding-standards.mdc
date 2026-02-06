@@ -1,0 +1,127 @@
+---
+globs: frontend/**/*.ts,frontend/**/*.tsx,frontend/**/*.js,frontend/**/*.jsx
+description: Frontend coding standards for React components and TypeScript files
+---
+
+# Frontend Coding Standards
+
+## Variable and Prop Naming
+
+- Use meaningful, descriptive names for variables and props that are easy to identify and understand
+- Follow **camelCase** for JavaScript properties and functions (e.g., `onUserSelect`, `userData`)
+- Follow **PascalCase** for React components (e.g., `UserProfile`, `ProductList`)
+- Component names should reflect their purpose - avoid generic names like `MainComponent` or `PageComponent`
+- Use consistent naming conventions for event handler props (e.g., `onUserSelect` instead of `selectUser`)
+
+## Null and Safety Checks
+
+- Always handle null checks and length checks wherever necessary depending on variable type
+- Validate data before accessing nested properties
+- Use optional chaining (`?.`) and nullish coalescing (`??`) operators when appropriate
+
+## Error Handling
+
+- Surround complex logic in functions with try-catch blocks when necessary
+- Simple, straightforward logic can skip try-catch blocks
+- Always handle errors appropriately (log, display to user, or propagate)
+
+## Import Organization
+
+Maintain imports in the following order with an empty line between each group:
+
+1. **Third-party packages** (React, Next.js, libraries)
+2. **@ annotation imports** (path aliases like `@/components`, `@/hooks`)
+3. **Relative path imports** (e.g., `./utils`, `../types`)
+
+Example:
+
+```typescript
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
+
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/hooks/useAuth';
+
+import { formatDate } from './utils';
+import type { User } from '../types';
+```
+
+Note: ESLint is configured to reorder imports alphabetically within each group.
+
+## Component Structure Order
+
+Maintain the following order of definitions in React components:
+
+1. **States** (useState declarations)
+2. **RTK Query Mutations** (useMutation hooks)
+3. **useRef and custom hooks**
+4. **Extracting data from custom hooks** (const declarations)
+5. **RTK Query API calls** (useQuery hooks)
+6. **useEffects**
+7. **useMemos and useCallbacks**
+8. **Functions** (event handlers, utility functions)
+9. **Renderer** (return statement with JSX)
+
+**Note:** This order may change when useEffects or callbacks expect functions to be defined prior to them.
+
+Example:
+
+```typescript
+function UserProfile() {
+  // 1. States
+  const [isEditing, setIsEditing] = useState(false);
+
+  // 2. RTK Query Mutations
+  const [updateUser] = useUpdateUserMutation();
+
+  // 3. useRef/custom hooks
+  const formRef = useRef<HTMLFormElement>(null);
+  const { user } = useAuth();
+
+  // 4. Extracting data from custom hooks
+  const userId = user?.id;
+
+  // 5. RTK Query API calls
+  const { data: profile, isLoading } = useGetUserProfileQuery(userId);
+
+  // 6. useEffects
+  useEffect(() => {
+    // effect logic
+  }, [userId]);
+
+  // 7. useMemos/useCallbacks
+  const formattedData = useMemo(() => {
+    return profile ? formatProfile(profile) : null;
+  }, [profile]);
+
+  // 8. Functions
+  const handleSubmit = () => {
+    // handler logic
+  };
+
+  // 9. Renderer
+  return (
+    <div>...</div>
+  );
+}
+```
+
+## Comments
+
+- Only add comments where business logic is complex or not immediately obvious
+- Avoid redundant comments that simply restate what the code does
+- Focus on explaining **why** rather than **what**
+
+## React Best Practices
+
+- Avoid overusing `useEffect` for logic that can be moved to event handlers or calculated lazily
+- Be mindful of dependencies in useEffect to avoid unnecessary re-renders
+- Use `useMemo` and `useCallback` judiciously - only when performance benefits are measurable
+- Maintain API caching wherever necessary (RTK Query handles this automatically when configured properly)
+
+## Performance Considerations
+
+- Leverage RTK Query's built-in caching mechanisms
+- Avoid unnecessary state updates that trigger re-renders
+- Use proper dependency arrays in hooks to prevent infinite loops
+- Consider code splitting for large components or routes
