@@ -1,5 +1,5 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document } from "mongoose";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
 
 export type UserDocument = User & Document;
 
@@ -14,11 +14,8 @@ export class User {
   @Prop({ required: true, trim: true })
   name: string;
 
-  @Prop({ default: "light", enum: ["light", "dark"] })
+  @Prop({ default: 'light', enum: ['light', 'dark'] })
   themePreference: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
-
-// Index for faster email lookups
-UserSchema.index({ email: 1 });

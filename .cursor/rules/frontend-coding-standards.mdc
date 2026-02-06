@@ -18,6 +18,7 @@ description: Frontend coding standards for React components and TypeScript files
 - Always handle null checks and length checks wherever necessary depending on variable type
 - Validate data before accessing nested properties
 - Use optional chaining (`?.`) and nullish coalescing (`??`) operators when appropriate
+ - Avoid using the `any` type in frontend code. Prefer specific types, interfaces, or `unknown` with proper type narrowing. If `any` is used as an exception, add an inline comment explaining why and include a TODO to replace it with a concrete type.
 
 ## Error Handling
 

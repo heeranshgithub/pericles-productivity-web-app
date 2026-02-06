@@ -20,6 +20,7 @@ globs: backend/**/*.ts
 - Use optional chaining (`?.`) and nullish coalescing (`??`) operators where appropriate
 - Validate data before accessing nested properties
 - Use DTOs with class-validator and class-transformer for request validation at the controller level
+- Avoid using the `any` type in backend code. Prefer explicit interfaces, DTOs, return types, or `unknown` with proper runtime checks and narrowing. Exceptions must be documented with a comment and a plan to replace `any` with a concrete type.
 
 ## Error Handling
 

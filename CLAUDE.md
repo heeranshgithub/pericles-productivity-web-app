@@ -18,6 +18,10 @@
 
 ---
 
+## General Best Practices
+
+- Avoid using the `any` type in both frontend and backend code. Prefer explicit types, interfaces, type aliases, or `unknown` with proper narrowing. If `any` must be used, include a comment explaining why and plan for a typed refactor.
+
 ## Frontend Standards
 
 ### Naming
