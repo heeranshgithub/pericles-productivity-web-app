@@ -10,11 +10,13 @@ import { Button } from '@/components/ui/button';
 import {
   LayoutDashboard,
   CheckSquare,
+  StickyNote,
   LogOut,
   PanelLeftClose,
   PanelLeftOpen,
 } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const navItems = [
   {
@@ -27,6 +29,11 @@ const navItems = [
     href: '/dashboard/tasks',
     icon: CheckSquare,
   },
+  {
+    label: 'Notes',
+    href: '/dashboard/notes',
+    icon: StickyNote,
+  },
 ];
 
 export function AppSidebar() {
@@ -35,7 +42,7 @@ export function AppSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { user } = useAppSelector((state) => state.auth);
+  const { user } = useAppSelector(state => state.auth);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -61,12 +68,12 @@ export function AppSidebar() {
             collapsed && 'justify-center w-full'
           )}
         >
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground text-sm font-bold">
-            P
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground text-sm font-bold overflow-hidden">
+            <Image src="/pericles.jpg" alt="Pericles" width={84} height={84} />
           </div>
           {!collapsed && (
-            <span className="text-sm font-semibold tracking-tight text-sidebar-foreground">
-              Pericles
+            <span className="text-sm font-bold tracking-tight text-sidebar-foreground">
+              PERICLES
             </span>
           )}
         </Link>
@@ -82,7 +89,7 @@ export function AppSidebar() {
         >
           Menu
         </p>
-        {navItems.map((item) => {
+        {navItems.map(item => {
           const active = isActive(item.href);
           return (
             <Link
@@ -131,14 +138,18 @@ export function AppSidebar() {
         )}
 
         {/* Actions */}
-        <div className={cn('flex items-center gap-1', collapsed ? 'flex-col' : '')}>
+        <div
+          className={cn('flex items-center gap-1', collapsed ? 'flex-col' : '')}
+        >
           <Button
             variant="ghost"
             size="sm"
             onClick={handleLogout}
             className={cn(
               'h-9 text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-foreground',
-              collapsed ? 'w-full justify-center px-0' : 'flex-1 justify-start gap-2 px-3'
+              collapsed
+                ? 'w-full justify-center px-0'
+                : 'flex-1 justify-start gap-2 px-3'
             )}
             title="Log out"
           >

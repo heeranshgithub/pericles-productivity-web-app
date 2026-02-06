@@ -130,46 +130,46 @@ export default function TasksPage() {
       {/* Stats Grid */}
       <div className="grid gap-4 grid-cols-2 sm:grid-cols-4 mb-6">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2 pt-4 px-4">
-            <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
               Total
             </CardTitle>
-            <ListChecks className="h-3.5 w-3.5 text-muted-foreground" />
+            <ListChecks className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent className="px-4 pb-4">
-            <p className="text-2xl font-bold tabular-nums">{stats?.total ?? 0}</p>
+          <CardContent>
+            <p className="text-3xl font-bold tabular-nums">{stats?.total ?? 0}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2 pt-4 px-4">
-            <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
               Pending
             </CardTitle>
-            <Clock className="h-3.5 w-3.5 text-amber-500" />
+            <Clock className="h-4 w-4 text-amber-500" />
           </CardHeader>
-          <CardContent className="px-4 pb-4">
-            <p className="text-2xl font-bold tabular-nums">{stats?.pending ?? 0}</p>
+          <CardContent>
+            <p className="text-3xl font-bold tabular-nums">{stats?.pending ?? 0}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2 pt-4 px-4">
-            <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
               Done
             </CardTitle>
-            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+            <CheckCircle2 className="h-4 w-4 text-emerald-500" />
           </CardHeader>
-          <CardContent className="px-4 pb-4">
-            <p className="text-2xl font-bold tabular-nums">{stats?.completed ?? 0}</p>
+          <CardContent>
+            <p className="text-3xl font-bold tabular-nums">{stats?.completed ?? 0}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2 pt-4 px-4">
-            <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
               Progress
             </CardTitle>
           </CardHeader>
-          <CardContent className="px-4 pb-4">
-            <p className="text-2xl font-bold tabular-nums">{completionPercent}%</p>
+          <CardContent>
+            <p className="text-3xl font-bold tabular-nums">{completionPercent}%</p>
             <div className="mt-2 h-1.5 w-full rounded-full bg-muted overflow-hidden">
               <div
                 className="h-full rounded-full bg-emerald-500 transition-all duration-300"
