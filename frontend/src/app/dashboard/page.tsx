@@ -8,11 +8,11 @@ import { CheckSquare, Clock, CheckCircle2, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 export default function DashboardPage() {
-  const { user } = useAppSelector((state) => state.auth);
+  const { user } = useAppSelector(state => state.auth);
   const { data: stats } = useGetTaskStatsQuery();
 
   return (
-    <div className="p-6 lg:p-8 max-w-5xl">
+    <div className="min-h-screen w-full p-6 lg:p-8">
       {/* Welcome header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold tracking-tight">
