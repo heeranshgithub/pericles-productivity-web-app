@@ -1,8 +1,9 @@
-import { Injectable, ConflictException } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
-import * as bcrypt from "bcryptjs";
-import { User, UserDocument } from "./schemas/user.schema";
+import { Injectable, ConflictException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import * as bcrypt from 'bcryptjs';
+import { User, UserDocument } from './schemas/user.schema';
+import { UpdateTimerPreferencesDto } from './dto/update-timer-preferences.dto';
 
 @Injectable()
 export class UsersService {
@@ -50,6 +51,27 @@ export class UsersService {
   ): Promise<UserDocument | null> {
     return this.userModel
       .findByIdAndUpdate(userId, { themePreference: theme }, { new: true })
+      .exec();
+  }
+
+  async updateTimerPreferences(
+    userId: string,
+    dto: UpdateTimerPreferencesDto,
+  ): Promise<UserDocument | null> {
+    const updateFields: Record<string, number> = {};
+
+    if (dto.defaultWorkDuration !== undefined) {
+      updateFields['timerPreferences.defaultWorkDuration'] =
+        dto.defaultWorkDuration;
+    }
+
+    if (dto.defaultBreakDuration !== undefined) {
+      updateFields['timerPreferences.defaultBreakDuration'] =
+        dto.defaultBreakDuration;
+    }
+
+    return this.userModel
+      .findByIdAndUpdate(userId, { $set: updateFields }, { new: true })
       .exec();
   }
 }

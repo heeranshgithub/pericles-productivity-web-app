@@ -8,7 +8,9 @@ import { Model, Types } from 'mongoose';
 import {
   FocusSession,
   FocusSessionDocument,
+  SessionType,
 } from './schemas/focus-session.schema';
+import { User, UserDocument } from '../users/schemas/user.schema';
 import { StartSessionDto } from './dto/start-session.dto';
 import { EndSessionDto } from './dto/end-session.dto';
 
@@ -17,6 +19,8 @@ export class FocusSessionsService {
   constructor(
     @InjectModel(FocusSession.name)
     private focusSessionModel: Model<FocusSessionDocument>,
+    @InjectModel(User.name)
+    private userModel: Model<UserDocument>,
   ) {}
 
   async startSession(
@@ -36,12 +40,29 @@ export class FocusSessionsService {
       );
     }
 
+    const sessionType = dto.sessionType ?? SessionType.POMODORO;
     const startTime = dto.startTime ? new Date(dto.startTime) : new Date();
+
+    // Resolve targetDuration: explicit > user preferences > standard defaults
+    let targetDuration: number | null = dto.targetDuration ?? null;
+    if (!targetDuration && sessionType === SessionType.POMODORO) {
+      const user = await this.userModel.findById(userId).exec();
+      if (user?.timerPreferences) {
+        targetDuration = dto.isBreak
+          ? user.timerPreferences.defaultBreakDuration
+          : user.timerPreferences.defaultWorkDuration;
+      } else {
+        targetDuration = dto.isBreak ? 300 : 1500;
+      }
+    }
 
     const session = new this.focusSessionModel({
       userId: new Types.ObjectId(userId),
       startTime,
       isActive: true,
+      sessionType,
+      targetDuration,
+      isBreak: dto.isBreak ?? false,
     });
 
     return session.save();

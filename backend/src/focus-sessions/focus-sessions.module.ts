@@ -6,11 +6,13 @@ import {
   FocusSession,
   FocusSessionSchema,
 } from './schemas/focus-session.schema';
+import { User, UserSchema } from '../users/schemas/user.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: FocusSession.name, schema: FocusSessionSchema },
+      { name: User.name, schema: UserSchema },
     ]),
   ],
   controllers: [FocusSessionsController],
