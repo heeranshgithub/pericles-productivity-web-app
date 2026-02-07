@@ -32,5 +32,5 @@ npm run dev             # http://localhost:3000
 
 ## Documentation
 
-- **[Backend](backend/README.md)** — API endpoints, database schemas, architecture
-- **[Frontend](frontend/README.md)** — Components, state management, routing
+- **[Backend](backend/README.md)** — Setup, API endpoints, database schemas, architecture
+- **[Frontend](frontend/README.md)** — Setup, Components, state management, routing
