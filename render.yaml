@@ -1,0 +1,57 @@
+services:
+  # NestJS Backend
+  - type: web
+    name: pericles-backend
+    env: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start:prod
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 22.12.0
+      - key: NODE_ENV
+        value: production
+      # sync:false means secrets are stored in the render dashboard
+      - key: MONGODB_URI
+        sync: false
+      - key: DB_NAME
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRATION
+        value: 7d
+      - key: FRONTEND_URL
+        sync: false
+      - key: API_V1_PREFIX
+        value: ''
+      - key: ENCRYPTION_KEY
+        sync: false
+      - key: SALT_ROUNDS
+        value: 10
+      - key: DEMO_ACCOUNT_EMAIL
+        sync: false
+      - key: DEMO_ACCOUNT_PASSWORD
+        sync: false
+
+  # Next.js Frontend
+  - type: web
+    name: pericles-frontend
+    env: node
+    plan: free
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_VERSION
+        value: 22.12.0
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          name: pericles-backend
+          type: web
+          property: host
+      - key: NEXT_PUBLIC_API_V1_PREFIX
+        value: ''

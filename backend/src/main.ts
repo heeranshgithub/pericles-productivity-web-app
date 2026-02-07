@@ -1,7 +1,7 @@
-import { NestFactory } from "@nestjs/core";
-import { ValidationPipe } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { AppModule } from "./app.module";
+import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -9,14 +9,15 @@ async function bootstrap() {
 
   // Set global API prefix if configured.
   // Initially keeping API_V1_PREFIX empty, config setup so later we can add versioning easily
-  const apiPrefix = configService.get<string>("API_V1_PREFIX");
+  const apiPrefix = configService.get<string>('API_V1_PREFIX');
   if (apiPrefix) {
     app.setGlobalPrefix(apiPrefix);
   }
 
   // Enable CORS for frontend
   app.enableCors({
-    origin: "http://localhost:3000",
+    origin:
+      configService.get<string>('FRONTEND_URL') || 'http://localhost:3000',
     credentials: true,
   });
 
