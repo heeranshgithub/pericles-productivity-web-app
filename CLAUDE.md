@@ -124,3 +124,91 @@ pericles/
 ├── frontend/    # Next.js
 └── .brain-dump/ # Planning docs
 ```
+
+---
+description: STRICTLY follow Pericles Design System (Swiss Design/International Typographic Style) for all frontend UI.
+globs: frontend/**/*.{tsx,jsx}
+---
+# Pericles Design System (Swiss Style)
+
+Refuse to use standard Tailwind presets if they conflict with these rules.
+
+## 1. Core Principles (Swiss Design)
+- **Grid-Based**: rigorous alignment.
+- **Typography-First**: text is the UI; minimal decoration.
+- **Minimalist**: remove shadows, gradients, and rounded corners unless specified.
+- **Precision**: 1px borders, consistent 4px spacing steps.
+
+## 2. Typography (Geist Mono)
+All text uses `font-mono`.
+- **H1 (Page)**: `text-2xl font-bold tracking-tight`
+- **H2 (Section)**: `text-lg font-semibold tracking-tight`
+- **H3 (Card)**: `text-xs font-medium uppercase tracking-wider text-muted-foreground`
+- **Body**: `text-sm leading-relaxed`
+- **Label**: `text-xs font-medium tracking-wide`
+- **Numbers**: `font-bold tabular-nums`
+
+## 3. Colors & Theme
+- **Primary**: Teal (Action/Interactive).
+- **Semantic**: Emerald (Success), Amber (Warning), Red (Error).
+- **Surface**: `bg-background` (Page), `bg-card` (Container).
+- **Border**: `border-border` (Solid), `border-dashed border-border` (Empty States).
+- **Hover**: `hover:bg-accent/50 transition-colors duration-150`.
+
+## 4. Components (Copy-Paste Patterns)
+
+### Page Header
+```tsx
+<div className="flex items-start justify-between mb-6">
+  <div>
+    <h1 className="text-2xl font-bold tracking-tight">Title</h1>
+    <p className="text-sm text-muted-foreground mt-1">Description</p>
+  </div>
+  <Button className="gap-2"><Icon className="h-4 w-4" />Action</Button>
+</div>
+```
+
+### Stat Card
+```tsx
+<Card>
+  <CardHeader className="flex flex-row items-center justify-between pb-2 pt-4 px-4">
+    <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">LABEL</CardTitle>
+    <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+  </CardHeader>
+  <CardContent className="px-4 pb-4">
+    <p className="text-2xl font-bold tabular-nums">{value}</p>
+  </CardContent>
+</Card>
+```
+
+### List Item / Task
+```tsx
+<div className="group flex items-center gap-4 p-3 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors duration-150">
+  {/* Content */}
+</div>
+```
+
+### Empty State
+```tsx
+<div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border py-16 px-4">
+  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted mb-4">
+    <Icon className="h-6 w-6 text-muted-foreground" />
+  </div>
+  <h3 className="text-sm font-medium mb-1">Title</h3>
+  <p className="text-sm text-muted-foreground mb-4 text-center">Description</p>
+</div>
+```
+
+## 5. Spacing & Icons
+- **Icons**: Always Lucide React.
+  - Micro: `h-3 w-3`
+  - Small: `h-3.5 w-3.5` (Stats, Badges)
+  - Default: `h-4 w-4` (Buttons)
+- **Spacing**: Multiples of 4px (`gap-2`, `p-4`, `mb-6`).
+- **Radius**: `rounded-lg` (standard), `rounded-full` (badges/avatars).
+
+## 6. Forbidden ❌
+- NO shadows (`shadow-md`, etc.) - use borders.
+- NO arbitrary pixel values (`w-[37px]`) - use spacing scale.
+- NO serif or sans-serif fonts - strict monospace.
+- NO slow transitions - limit to `duration-150`.
