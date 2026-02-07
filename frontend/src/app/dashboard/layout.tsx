@@ -3,6 +3,7 @@
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { AppSidebar } from '@/components/AppSidebar';
 import { SidebarProvider, useSidebar } from '@/components/SidebarContext';
+import { TimerNotificationProvider } from '@/components/dashboard/TimerNotificationProvider';
 import { cn } from '@/lib/utils';
 
 function DashboardShell({ children }: { children: React.ReactNode }) {
@@ -38,6 +39,7 @@ export default function DashboardLayout({
   return (
     <ProtectedRoute>
       <SidebarProvider>
+        <TimerNotificationProvider />
         <DashboardShell>{children}</DashboardShell>
       </SidebarProvider>
     </ProtectedRoute>

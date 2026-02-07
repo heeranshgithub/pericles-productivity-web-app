@@ -20,7 +20,9 @@ import { formatDuration } from '@/lib/utils/timer';
 
 export default function DashboardPage() {
   const { user } = useAppSelector(state => state.auth);
-  const { data: stats, isLoading } = useGetDashboardStatsQuery();
+  const { data: stats, isLoading } = useGetDashboardStatsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
 
   return (
     <div className="min-h-screen w-full p-6 lg:p-8">

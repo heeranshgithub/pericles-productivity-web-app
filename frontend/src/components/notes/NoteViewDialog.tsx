@@ -7,20 +7,23 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Note, NoteType } from '@/types/note';
-import { Lock, Globe } from 'lucide-react';
+import { Lock, Globe, Edit3 } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface NoteViewDialogProps {
   note: Note | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onEdit?: (note: Note) => void;
 }
 
 export function NoteViewDialog({
   note,
   open,
   onOpenChange,
+  onEdit,
 }: NoteViewDialogProps) {
   if (!note) return null;
 
@@ -29,7 +32,8 @@ export function NoteViewDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+        {/* add right padding so the close (X) button doesn't overlap header content */}
+        <DialogHeader className="pr-10">
           <div className="flex items-center gap-3">
             {isPrivate ? (
               <Lock className="h-5 w-5 text-amber-600" />
@@ -40,6 +44,19 @@ export function NoteViewDialog({
             <Badge variant={isPrivate ? 'secondary' : 'outline'}>
               {isPrivate ? 'Private' : 'Public'}
             </Badge>
+            {onEdit && (
+              <Button
+                size="sm"
+                variant="ghost"
+                className="ml-2 gap-2"
+                onClick={() => {
+                  onEdit(note);
+                }}
+              >
+                <Edit3 className="h-4 w-4" />
+                Edit
+              </Button>
+            )}
           </div>
           <p className="text-xs text-muted-foreground">
             Last updated: {format(new Date(note.updatedAt), 'PPpp')}

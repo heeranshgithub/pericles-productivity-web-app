@@ -18,7 +18,16 @@ export const dashboardApi = baseApi.injectEndpoints({
   endpoints: builder => ({
     getDashboardStats: builder.query<DashboardStats, void>({
       query: () => '/dashboard/stats',
-      providesTags: ['Task', 'Note', 'FocusSession'],
+      keepUnusedDataFor: 0,
+      providesTags: [
+        { type: 'Task', id: 'LIST' },
+        { type: 'Task', id: 'STATS' },
+        { type: 'Note', id: 'LIST' },
+        { type: 'Note', id: 'RECENT' },
+        { type: 'FocusSession', id: 'LIST' },
+        { type: 'FocusSession', id: 'RECENT' },
+        { type: 'FocusSession', id: 'STATS' },
+      ],
     }),
   }),
 });

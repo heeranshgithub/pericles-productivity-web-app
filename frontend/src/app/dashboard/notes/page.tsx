@@ -214,6 +214,12 @@ export default function NotesPage() {
         note={viewingNote}
         open={!!viewingNote}
         onOpenChange={open => !open && setViewingNote(null)}
+        onEdit={note => {
+          // close view and open edit form
+          setViewingNote(null);
+          setEditingNote(note);
+          setIsFormOpen(true);
+        }}
       />
 
       {/* Delete confirmation */}

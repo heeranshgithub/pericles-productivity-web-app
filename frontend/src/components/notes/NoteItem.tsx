@@ -16,10 +16,13 @@ interface NoteItemProps {
 
 export function NoteItem({ note, onEdit, onDelete, onClick }: NoteItemProps) {
   const isPrivate = note.type === NoteType.PRIVATE;
-  const preview =
+  const trimmed =
     note.content.length > 150
       ? note.content.substring(0, 150) + '...'
       : note.content;
+  const preview = isPrivate
+    ? 'This note is private. Open to view its contents.'
+    : trimmed;
 
   return (
     <Card

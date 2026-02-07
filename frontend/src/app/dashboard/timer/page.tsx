@@ -16,10 +16,7 @@ import {
   useGetProfileQuery,
   useUpdateTimerPreferencesMutation,
 } from '@/store/api/userApi';
-import {
-  SessionType,
-  StartSessionParams,
-} from '@/types/focus-session';
+import { SessionType, StartSessionParams } from '@/types/focus-session';
 import {
   calculateElapsed,
   POMODORO_WORK_DURATION,
@@ -43,14 +40,19 @@ export default function TimerPage() {
   const [elapsed, setElapsed] = useState(0);
   const [timerMode, setTimerMode] = useState<SessionType>(SessionType.POMODORO);
   const [isBreakMode, setIsBreakMode] = useState(false);
-  const [customWorkDuration, setCustomWorkDuration] = useState<number | null>(null);
-  const [customBreakDuration, setCustomBreakDuration] = useState<number | null>(null);
+  const [customWorkDuration, setCustomWorkDuration] = useState<number | null>(
+    null
+  );
+  const [customBreakDuration, setCustomBreakDuration] = useState<number | null>(
+    null
+  );
   const [showCustomModal, setShowCustomModal] = useState(false);
-  const [customizingMode, setCustomizingMode] = useState<'work' | 'break'>('work');
+  const [customizingMode, setCustomizingMode] = useState<'work' | 'break'>(
+    'work'
+  );
   const [customInputValue, setCustomInputValue] = useState('');
   const [saveAsDefault, setSaveAsDefault] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const notifiedRef = useRef(false);
 
   const { data: currentUser } = useGetProfileQuery();
   const [updateTimerPreferences] = useUpdateTimerPreferencesMutation();
@@ -84,7 +86,6 @@ export default function TimerPage() {
   useEffect(() => {
     if (activeSession) {
       setElapsed(calculateElapsed(activeSession.startTime));
-      notifiedRef.current = false;
 
       intervalRef.current = setInterval(() => {
         setElapsed(calculateElapsed(activeSession.startTime));
@@ -95,7 +96,6 @@ export default function TimerPage() {
         intervalRef.current = null;
       }
       setElapsed(0);
-      notifiedRef.current = false;
     }
 
     return () => {
@@ -105,43 +105,8 @@ export default function TimerPage() {
     };
   }, [activeSession]);
 
-  useEffect(() => {
-    if (timerMode === SessionType.POMODORO && 'Notification' in window) {
-      if (Notification.permission === 'default') {
-        Notification.requestPermission();
-      }
-    }
-  }, [timerMode]);
-
-  useEffect(() => {
-    if (
-      !activeSession ||
-      activeSession.sessionType !== SessionType.POMODORO ||
-      !activeSession.targetDuration ||
-      notifiedRef.current
-    ) {
-      return;
-    }
-
-    const remaining = activeSession.targetDuration - elapsed;
-
-    if (remaining <= 0) {
-      notifiedRef.current = true;
-
-      const message = activeSession.isBreak
-        ? 'Break time is over! Ready to focus?'
-        : 'Great work! Time for a break!';
-
-      toast.success(message);
-
-      if ('Notification' in window && Notification.permission === 'granted') {
-        new Notification('Pomodoro Timer', {
-          body: message,
-          icon: '/favicon.ico',
-        });
-      }
-    }
-  }, [activeSession, elapsed]);
+  // Notification logic (browser Notification) is handled globally
+  // by TimerNotificationProvider in the dashboard layout.
 
   const isPresetActive = (work: number, brk: number) =>
     customWorkDuration === work && customBreakDuration === brk;
@@ -154,7 +119,8 @@ export default function TimerPage() {
   const handleOpenCustomModal = () => {
     const mode = isBreakMode ? 'break' : 'work';
     setCustomizingMode(mode);
-    const currentDuration = mode === 'work' ? getWorkDuration() : getBreakDuration();
+    const currentDuration =
+      mode === 'work' ? getWorkDuration() : getBreakDuration();
     setCustomInputValue(String(Math.floor(currentDuration / 60)));
     setSaveAsDefault(false);
     setShowCustomModal(true);
@@ -259,7 +225,9 @@ export default function TimerPage() {
             <div className="flex items-center justify-between">
               <div className="flex gap-4">
                 <Button
-                  variant={timerMode === SessionType.POMODORO ? 'default' : 'outline'}
+                  variant={
+                    timerMode === SessionType.POMODORO ? 'default' : 'outline'
+                  }
                   onClick={() => setTimerMode(SessionType.POMODORO)}
                   disabled={!!activeSession}
                   className="gap-2"
@@ -268,7 +236,9 @@ export default function TimerPage() {
                   Pomodoro
                 </Button>
                 <Button
-                  variant={timerMode === SessionType.STOPWATCH ? 'default' : 'outline'}
+                  variant={
+                    timerMode === SessionType.STOPWATCH ? 'default' : 'outline'
+                  }
                   onClick={() => setTimerMode(SessionType.STOPWATCH)}
                   disabled={!!activeSession}
                   className="gap-2"
@@ -311,9 +281,17 @@ export default function TimerPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => handlePresetSelect(DURATION_PRESETS.CLASSIC.work, DURATION_PRESETS.CLASSIC.break)}
+                  onClick={() =>
+                    handlePresetSelect(
+                      DURATION_PRESETS.CLASSIC.work,
+                      DURATION_PRESETS.CLASSIC.break
+                    )
+                  }
                   className={
-                    isPresetActive(DURATION_PRESETS.CLASSIC.work, DURATION_PRESETS.CLASSIC.break)
+                    isPresetActive(
+                      DURATION_PRESETS.CLASSIC.work,
+                      DURATION_PRESETS.CLASSIC.break
+                    )
                       ? 'border-teal-500 bg-teal-50 dark:bg-teal-950'
                       : ''
                   }
@@ -324,9 +302,17 @@ export default function TimerPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => handlePresetSelect(DURATION_PRESETS.EXTENDED.work, DURATION_PRESETS.EXTENDED.break)}
+                  onClick={() =>
+                    handlePresetSelect(
+                      DURATION_PRESETS.EXTENDED.work,
+                      DURATION_PRESETS.EXTENDED.break
+                    )
+                  }
                   className={
-                    isPresetActive(DURATION_PRESETS.EXTENDED.work, DURATION_PRESETS.EXTENDED.break)
+                    isPresetActive(
+                      DURATION_PRESETS.EXTENDED.work,
+                      DURATION_PRESETS.EXTENDED.break
+                    )
                       ? 'border-teal-500 bg-teal-50 dark:bg-teal-950'
                       : ''
                   }
@@ -337,9 +323,17 @@ export default function TimerPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => handlePresetSelect(DURATION_PRESETS.DEEP_FOCUS.work, DURATION_PRESETS.DEEP_FOCUS.break)}
+                  onClick={() =>
+                    handlePresetSelect(
+                      DURATION_PRESETS.DEEP_FOCUS.work,
+                      DURATION_PRESETS.DEEP_FOCUS.break
+                    )
+                  }
                   className={
-                    isPresetActive(DURATION_PRESETS.DEEP_FOCUS.work, DURATION_PRESETS.DEEP_FOCUS.break)
+                    isPresetActive(
+                      DURATION_PRESETS.DEEP_FOCUS.work,
+                      DURATION_PRESETS.DEEP_FOCUS.break
+                    )
                       ? 'border-teal-500 bg-teal-50 dark:bg-teal-950'
                       : ''
                   }
@@ -357,7 +351,8 @@ export default function TimerPage() {
                   Custom
                 </Button>
 
-                {(customWorkDuration !== null || customBreakDuration !== null) && (
+                {(customWorkDuration !== null ||
+                  customBreakDuration !== null) && (
                   <Button
                     variant="ghost"
                     size="sm"
@@ -430,14 +425,20 @@ export default function TimerPage() {
                   checked={saveAsDefault}
                   onChange={e => setSaveAsDefault(e.target.checked)}
                 />
-                <label htmlFor="saveAsDefault" className="text-sm cursor-pointer">
+                <label
+                  htmlFor="saveAsDefault"
+                  className="text-sm cursor-pointer"
+                >
                   Save as my default {customizingMode} duration
                 </label>
               </div>
             </div>
 
             <DialogFooter>
-              <Button variant="outline" onClick={() => setShowCustomModal(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setShowCustomModal(false)}
+              >
                 Cancel
               </Button>
               <Button onClick={handleApplyCustom}>Apply</Button>
