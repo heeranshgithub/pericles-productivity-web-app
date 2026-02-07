@@ -12,7 +12,10 @@ import {
   useGetAllSessionsQuery,
   useDeleteSessionMutation,
 } from '@/store/api/focusSessionsApi';
-import { useGetProfileQuery } from '@/store/api/userApi';
+import {
+  useGetProfileQuery,
+  useUpdateTimerPreferencesMutation,
+} from '@/store/api/userApi';
 import {
   SessionType,
   StartSessionParams,
@@ -21,20 +24,36 @@ import {
   calculateElapsed,
   POMODORO_WORK_DURATION,
   POMODORO_BREAK_DURATION,
+  DURATION_PRESETS,
 } from '@/lib/utils/timer';
 import { toast } from 'sonner';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Timer, Clock } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { Timer, Clock, Settings } from 'lucide-react';
 
 export default function TimerPage() {
   const [elapsed, setElapsed] = useState(0);
   const [timerMode, setTimerMode] = useState<SessionType>(SessionType.POMODORO);
   const [isBreakMode, setIsBreakMode] = useState(false);
+  const [customWorkDuration, setCustomWorkDuration] = useState<number | null>(null);
+  const [customBreakDuration, setCustomBreakDuration] = useState<number | null>(null);
+  const [showCustomModal, setShowCustomModal] = useState(false);
+  const [customizingMode, setCustomizingMode] = useState<'work' | 'break'>('work');
+  const [customInputValue, setCustomInputValue] = useState('');
+  const [saveAsDefault, setSaveAsDefault] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const notifiedRef = useRef(false);
 
   const { data: currentUser } = useGetProfileQuery();
+  const [updateTimerPreferences] = useUpdateTimerPreferencesMutation();
 
   const { data: activeSession } = useGetActiveSessionQuery(undefined, {
     pollingInterval: 10000,
@@ -46,11 +65,21 @@ export default function TimerPage() {
 
   const isLoading = isStarting || isEnding;
 
-  const getWorkDuration = () =>
-    currentUser?.timerPreferences?.defaultWorkDuration || POMODORO_WORK_DURATION;
+  const getWorkDuration = () => {
+    if (customWorkDuration) return customWorkDuration;
+    if (currentUser?.timerPreferences?.defaultWorkDuration) {
+      return currentUser.timerPreferences.defaultWorkDuration;
+    }
+    return POMODORO_WORK_DURATION;
+  };
 
-  const getBreakDuration = () =>
-    currentUser?.timerPreferences?.defaultBreakDuration || POMODORO_BREAK_DURATION;
+  const getBreakDuration = () => {
+    if (customBreakDuration) return customBreakDuration;
+    if (currentUser?.timerPreferences?.defaultBreakDuration) {
+      return currentUser.timerPreferences.defaultBreakDuration;
+    }
+    return POMODORO_BREAK_DURATION;
+  };
 
   useEffect(() => {
     if (activeSession) {
@@ -76,7 +105,6 @@ export default function TimerPage() {
     };
   }, [activeSession]);
 
-  // Request notification permission for Pomodoro mode
   useEffect(() => {
     if (timerMode === SessionType.POMODORO && 'Notification' in window) {
       if (Notification.permission === 'default') {
@@ -85,7 +113,6 @@ export default function TimerPage() {
     }
   }, [timerMode]);
 
-  // Detect timer completion for Pomodoro
   useEffect(() => {
     if (
       !activeSession ||
@@ -115,6 +142,53 @@ export default function TimerPage() {
       }
     }
   }, [activeSession, elapsed]);
+
+  const isPresetActive = (work: number, brk: number) =>
+    customWorkDuration === work && customBreakDuration === brk;
+
+  const handlePresetSelect = (work: number, brk: number) => {
+    setCustomWorkDuration(work);
+    setCustomBreakDuration(brk);
+  };
+
+  const handleOpenCustomModal = () => {
+    const mode = isBreakMode ? 'break' : 'work';
+    setCustomizingMode(mode);
+    const currentDuration = mode === 'work' ? getWorkDuration() : getBreakDuration();
+    setCustomInputValue(String(Math.floor(currentDuration / 60)));
+    setSaveAsDefault(false);
+    setShowCustomModal(true);
+  };
+
+  const handleApplyCustom = async () => {
+    const minutes = parseInt(customInputValue);
+    if (isNaN(minutes) || minutes < 1 || minutes > 240) {
+      toast.error('Duration must be between 1 and 240 minutes');
+      return;
+    }
+
+    const seconds = minutes * 60;
+    if (customizingMode === 'work') {
+      setCustomWorkDuration(seconds);
+    } else {
+      setCustomBreakDuration(seconds);
+    }
+
+    if (saveAsDefault) {
+      try {
+        await updateTimerPreferences({
+          [customizingMode === 'work'
+            ? 'defaultWorkDuration'
+            : 'defaultBreakDuration']: seconds,
+        }).unwrap();
+        toast.success('Default duration saved!');
+      } catch {
+        toast.error('Failed to save default');
+      }
+    }
+
+    setShowCustomModal(false);
+  };
 
   const handleStart = async () => {
     try {
@@ -228,6 +302,77 @@ export default function TimerPage() {
             </div>
           </Card>
 
+          {timerMode === SessionType.POMODORO && !activeSession && (
+            <Card className="p-4">
+              <h3 className="text-xs font-medium uppercase tracking-wider text-muted-foreground mb-3">
+                DURATION PRESETS
+              </h3>
+              <div className="flex items-center gap-2 flex-wrap">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePresetSelect(DURATION_PRESETS.CLASSIC.work, DURATION_PRESETS.CLASSIC.break)}
+                  className={
+                    isPresetActive(DURATION_PRESETS.CLASSIC.work, DURATION_PRESETS.CLASSIC.break)
+                      ? 'border-teal-500 bg-teal-50 dark:bg-teal-950'
+                      : ''
+                  }
+                >
+                  Classic (25/5)
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePresetSelect(DURATION_PRESETS.EXTENDED.work, DURATION_PRESETS.EXTENDED.break)}
+                  className={
+                    isPresetActive(DURATION_PRESETS.EXTENDED.work, DURATION_PRESETS.EXTENDED.break)
+                      ? 'border-teal-500 bg-teal-50 dark:bg-teal-950'
+                      : ''
+                  }
+                >
+                  Extended (50/10)
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePresetSelect(DURATION_PRESETS.DEEP_FOCUS.work, DURATION_PRESETS.DEEP_FOCUS.break)}
+                  className={
+                    isPresetActive(DURATION_PRESETS.DEEP_FOCUS.work, DURATION_PRESETS.DEEP_FOCUS.break)
+                      ? 'border-teal-500 bg-teal-50 dark:bg-teal-950'
+                      : ''
+                  }
+                >
+                  Deep Focus (90/20)
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleOpenCustomModal}
+                  className="gap-2"
+                >
+                  <Settings className="h-3.5 w-3.5" />
+                  Custom
+                </Button>
+
+                {(customWorkDuration !== null || customBreakDuration !== null) && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setCustomWorkDuration(null);
+                      setCustomBreakDuration(null);
+                    }}
+                  >
+                    Reset
+                  </Button>
+                )}
+              </div>
+            </Card>
+          )}
+
           <TimerDisplay
             elapsed={elapsed}
             isActive={!!activeSession}
@@ -251,6 +396,54 @@ export default function TimerPage() {
             <SessionHistory sessions={sessions} onDelete={handleDelete} />
           </div>
         </div>
+
+        <Dialog open={showCustomModal} onOpenChange={setShowCustomModal}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>
+                Custom {customizingMode === 'work' ? 'Work' : 'Break'} Duration
+              </DialogTitle>
+            </DialogHeader>
+
+            <div className="space-y-4">
+              <div>
+                <label className="text-xs font-medium tracking-wide mb-2 block">
+                  Duration (minutes)
+                </label>
+                <Input
+                  type="number"
+                  min={1}
+                  max={240}
+                  value={customInputValue}
+                  onChange={e => setCustomInputValue(e.target.value)}
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Between 1 and 240 minutes
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="saveAsDefault"
+                  className="w-4 h-4 accent-teal-600"
+                  checked={saveAsDefault}
+                  onChange={e => setSaveAsDefault(e.target.checked)}
+                />
+                <label htmlFor="saveAsDefault" className="text-sm cursor-pointer">
+                  Save as my default {customizingMode} duration
+                </label>
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowCustomModal(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleApplyCustom}>Apply</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </ProtectedRoute>
   );

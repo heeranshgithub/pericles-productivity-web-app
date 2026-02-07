@@ -1,12 +1,12 @@
- 'use client';
+'use client';
 
 import { useEffect, useState } from 'react';
-import { FocusSession } from '@/types/focus-session';
+import { FocusSession, SessionType } from '@/types/focus-session';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { formatDuration, calculateElapsed } from '@/lib/utils/timer';
-import { Trash2, Clock } from 'lucide-react';
+import { Trash2, Clock, Timer } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface SessionHistoryProps {
@@ -17,7 +17,6 @@ interface SessionHistoryProps {
 export function SessionHistory({ sessions, onDelete }: SessionHistoryProps) {
   const [tick, setTick] = useState(0);
 
-  // Keep a ticking state only while there's an active session so active durations update live.
   useEffect(() => {
     const hasActive = sessions.some(s => s.isActive);
     if (!hasActive) return;
@@ -42,13 +41,47 @@ export function SessionHistory({ sessions, onDelete }: SessionHistoryProps) {
 
   return (
     <div className="space-y-3">
-      {sessions.map(session => (
-        <Card key={session._id} className="p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4 flex-1">
-              <Clock className="h-4 w-4 text-teal-600 shrink-0" />
-              <div className="flex-1">
-                <div className="flex items-center gap-2">
+      {sessions.map(session => {
+        const isPomodoro = session.sessionType === SessionType.POMODORO;
+
+        return (
+          <Card key={session._id} className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4 flex-1">
+                {isPomodoro ? (
+                  <Timer className="h-4 w-4 text-teal-600 shrink-0" />
+                ) : (
+                  <Clock className="h-4 w-4 text-teal-600 shrink-0" />
+                )}
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Badge
+                      variant={isPomodoro ? 'default' : 'secondary'}
+                    >
+                      {isPomodoro ? 'Pomodoro' : 'Stopwatch'}
+                    </Badge>
+
+                    {isPomodoro && (
+                      <Badge variant={session.isBreak ? 'outline' : 'default'}>
+                        {session.isBreak ? 'Break' : 'Work'}
+                      </Badge>
+                    )}
+
+                    {session.isActive && (
+                      <Badge variant="default" className="bg-teal-600">
+                        Active
+                      </Badge>
+                    )}
+                  </div>
+
+                  <p className="text-xs text-muted-foreground">
+                    {format(new Date(session.startTime), 'PPp')}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <div className="text-right">
                   <span className="font-bold tabular-nums">
                     {formatDuration(
                       session.isActive
@@ -56,27 +89,29 @@ export function SessionHistory({ sessions, onDelete }: SessionHistoryProps) {
                         : session.duration ?? 0
                     )}
                   </span>
-                  {session.isActive && <Badge variant="default">Active</Badge>}
+
+                  {isPomodoro && session.targetDuration && (
+                    <p className="text-xs text-muted-foreground">
+                      Target: {Math.floor(session.targetDuration / 60)}m
+                    </p>
+                  )}
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  {format(new Date(session.startTime), 'PPp')}
-                </p>
+
+                {!session.isActive && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onDelete(session._id)}
+                    className="text-destructive hover:text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                )}
               </div>
             </div>
-
-            {!session.isActive && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => onDelete(session._id)}
-                className="text-destructive hover:text-destructive"
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
-        </Card>
-      ))}
+          </Card>
+        );
+      })}
     </div>
   );
 }
