@@ -23,8 +23,6 @@ FRONTEND_URL=http://localhost:3000
 API_V1_PREFIX=              # optional. keeping it empty for now. can be used later for versioning.
 ENCRYPTION_KEY=your-encryption-key
 SALT_ROUNDS=10
-DEMO_ACCOUNT_EMAIL=         # optional
-DEMO_ACCOUNT_PASSWORD=      # optional
 ```
 
 ### Install & Run

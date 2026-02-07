@@ -30,10 +30,6 @@ services:
         sync: false
       - key: SALT_ROUNDS
         value: 10
-      - key: DEMO_ACCOUNT_EMAIL
-        sync: false
-      - key: DEMO_ACCOUNT_PASSWORD
-        sync: false
 
   # Next.js Frontend
   - type: web
@@ -48,6 +44,10 @@ services:
         value: 22.12.0
       - key: NODE_ENV
         value: production
+      - key: NEXT_PUBLIC_DEMO_ACCOUNT_EMAIL
+        sync: false
+      - key: NEXT_PUBLIC_DEMO_ACCOUNT_PASSWORD
+        sync: false
       - key: NEXT_PUBLIC_API_URL
         fromService:
           name: pericles-backend

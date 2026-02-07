@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useRegisterMutation } from "@/store/api/authApi";
+import { useLoginMutation, useRegisterMutation } from "@/store/api/authApi";
 import { useAppDispatch } from "@/store/hooks";
 import { setCredentials } from "@/store/slices/authSlice";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,9 @@ import { toast } from "sonner";
 import Link from "next/link";
 import AuthBranding from "@/components/auth/AuthBranding";
 
+const DEMO_EMAIL = process.env.NEXT_PUBLIC_DEMO_ACCOUNT_EMAIL;
+const DEMO_PASSWORD = process.env.NEXT_PUBLIC_DEMO_ACCOUNT_PASSWORD;
+
 export default function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -27,6 +30,8 @@ export default function RegisterPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [register, { isLoading }] = useRegisterMutation();
+  const [login] = useLoginMutation();
+  const [isDemoLoading, setIsDemoLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,6 +56,22 @@ export default function RegisterPage() {
     } catch (error: unknown) {
       const err = error as { data?: { message?: string } };
       toast.error(err.data?.message || "Registration failed");
+    }
+  };
+
+  const handleDemoLogin = async () => {
+    if (!DEMO_EMAIL || !DEMO_PASSWORD) return;
+    setIsDemoLoading(true);
+    try {
+      const result = await login({ email: DEMO_EMAIL, password: DEMO_PASSWORD }).unwrap();
+      dispatch(setCredentials({ user: result.user, token: result.access_token }));
+      toast.success("Welcome to the demo!");
+      router.push("/dashboard/tasks");
+    } catch (error: unknown) {
+      const err = error as { data?: { message?: string } };
+      toast.error(err.data?.message || "Demo login failed");
+    } finally {
+      setIsDemoLoading(false);
     }
   };
 
@@ -117,6 +138,27 @@ export default function RegisterPage() {
               <Button type="submit" className="w-full mt-2" disabled={isLoading}>
                 {isLoading ? "Creating account..." : "Create Account"}
               </Button>
+              {DEMO_EMAIL && DEMO_PASSWORD && (
+                <>
+                  <div className="relative w-full">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t border-border" />
+                    </div>
+                    <div className="relative flex justify-center text-xs">
+                      <span className="bg-card px-2 text-muted-foreground">or</span>
+                    </div>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    disabled={isDemoLoading || isLoading}
+                    onClick={handleDemoLogin}
+                  >
+                    {isDemoLoading ? "Loading demo..." : "Try Demo"}
+                  </Button>
+                </>
+              )}
               <p className="text-sm text-center text-muted-foreground">
                 Already have an account?{" "}
                 <Link
