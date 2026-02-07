@@ -1,4 +1,5 @@
 import { Injectable, ConflictException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
@@ -7,7 +8,10 @@ import { UpdateTimerPreferencesDto } from './dto/update-timer-preferences.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    private configService: ConfigService,
+  ) {}
 
   async create(email: string, password: string, name: string): Promise<User> {
     // Check if user already exists
@@ -17,7 +21,10 @@ export class UsersService {
     }
 
     // Hash password
-    const saltRounds = 10;
+    const saltRounds = parseInt(
+      this.configService.get<string>('SALT_ROUNDS') || '10',
+      10,
+    );
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     // Create new user

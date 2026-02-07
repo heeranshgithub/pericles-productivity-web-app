@@ -1,8 +1,10 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException, BadRequestException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
+import { ConfigService } from "@nestjs/config";
 import { UsersService } from "../users/users.service";
 import { RegisterDto } from "./dto/register.dto";
 import { UserDocument } from "../users/schemas/user.schema";
+import * as bcrypt from "bcryptjs";
 
 export type AuthUser = {
   _id: UserDocument["_id"];
@@ -17,6 +19,7 @@ export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private configService: ConfigService,
   ) {}
 
   async validateUser(
@@ -61,5 +64,29 @@ export class AuthService {
 
     const { password: _, ...userWithoutPassword } = (user as any).toObject();
     return this.login(userWithoutPassword);
+  }
+
+  async changePassword(userId: string, dto: { currentPassword: string; newPassword: string }) {
+    const user = await this.usersService.findById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const isMatch = await this.usersService.validatePassword(
+      dto.currentPassword,
+      user.password,
+    );
+    if (!isMatch) {
+      throw new BadRequestException('Current password is incorrect');
+    }
+
+    const saltRounds = parseInt(
+      this.configService.get<string>('SALT_ROUNDS') || '10',
+      10,
+    );
+    user.password = await bcrypt.hash(dto.newPassword, saltRounds);
+    await user.save();
+
+    return { success: true };
   }
 }

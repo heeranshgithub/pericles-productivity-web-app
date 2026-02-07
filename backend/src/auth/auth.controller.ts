@@ -5,8 +5,12 @@ import {
   HttpCode,
   HttpStatus,
   UnauthorizedException,
+  Patch,
+  UseGuards,
+  Request,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
+import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
 
@@ -31,5 +35,15 @@ export class AuthController {
       throw new UnauthorizedException("Invalid credentials");
     }
     return this.authService.login(user);
+  }
+
+  @Patch('change-password')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async changePassword(
+    @Request() req: { user: { userId: string } },
+    @Body() dto: { currentPassword: string; newPassword: string },
+  ) {
+    return this.authService.changePassword(req.user.userId, dto);
   }
 }
