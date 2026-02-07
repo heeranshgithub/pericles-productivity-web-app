@@ -19,6 +19,9 @@ import {
 import { toast } from 'sonner';
 import Link from 'next/link';
 import AuthBranding from '@/components/auth/AuthBranding';
+import { useIsMobile } from '@/hooks/useIsMobile';
+import { MobileRestrictionMessage } from '@/components/mobile/MobileRestrictionMessage';
+import { MOBILE_RESTRICTION_CONFIG } from '@/config/mobileRestriction.config';
 
 const DEMO_EMAIL = process.env.NEXT_PUBLIC_DEMO_ACCOUNT_EMAIL;
 const DEMO_PASSWORD = process.env.NEXT_PUBLIC_DEMO_ACCOUNT_PASSWORD;
@@ -32,6 +35,12 @@ export default function RegisterPage() {
   const [register, { isLoading }] = useRegisterMutation();
   const [login] = useLoginMutation();
   const [isDemoLoading, setIsDemoLoading] = useState(false);
+  const isMobile = useIsMobile();
+
+  // Show mobile restriction message on mobile devices
+  if (MOBILE_RESTRICTION_CONFIG.ENABLE_MOBILE_RESTRICTION && isMobile) {
+    return <MobileRestrictionMessage />;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,7 +111,9 @@ export default function RegisterPage() {
                 disabled={isDemoLoading || isLoading}
                 onClick={handleDemoLogin}
               >
-                {isDemoLoading ? 'Loading demo...' : 'Try Demo — No signup required'}
+                {isDemoLoading
+                  ? 'Loading demo...'
+                  : 'Try Demo — No signup required'}
               </Button>
               <div className="relative w-full mt-4">
                 <div className="absolute inset-0 flex items-center">
