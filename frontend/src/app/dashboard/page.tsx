@@ -20,9 +20,7 @@ import { formatDuration } from '@/lib/utils/timer';
 
 export default function DashboardPage() {
   const { user } = useAppSelector(state => state.auth);
-  const { data: stats, isLoading } = useGetDashboardStatsQuery(undefined, {
-    refetchOnMountOrArgChange: true,
-  });
+  const { data: stats, isLoading } = useGetDashboardStatsQuery();
 
   return (
     <div className="min-h-screen w-full p-6 lg:p-8">
@@ -58,7 +56,9 @@ export default function DashboardPage() {
               >
                 <CheckSquare className="h-3.5 w-3.5 text-muted-foreground" />
                 <div>
-                  <p className="text-lg font-bold tabular-nums">{stats?.tasks.total ?? 0}</p>
+                  <p className="text-lg font-bold tabular-nums">
+                    {stats?.tasks.total ?? 0}
+                  </p>
                   <p className="text-xs text-muted-foreground">Total</p>
                 </div>
               </Link>
@@ -68,7 +68,9 @@ export default function DashboardPage() {
               >
                 <Clock className="h-3.5 w-3.5 text-amber-500" />
                 <div>
-                  <p className="text-lg font-bold tabular-nums">{stats?.tasks.pending ?? 0}</p>
+                  <p className="text-lg font-bold tabular-nums">
+                    {stats?.tasks.pending ?? 0}
+                  </p>
                   <p className="text-xs text-muted-foreground">Pending</p>
                 </div>
               </Link>
@@ -78,7 +80,9 @@ export default function DashboardPage() {
               >
                 <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
                 <div>
-                  <p className="text-lg font-bold tabular-nums">{stats?.tasks.completed ?? 0}</p>
+                  <p className="text-lg font-bold tabular-nums">
+                    {stats?.tasks.completed ?? 0}
+                  </p>
                   <p className="text-xs text-muted-foreground">Completed</p>
                 </div>
               </Link>
@@ -197,9 +201,7 @@ export default function DashboardPage() {
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted mb-3">
                   <Timer className="h-4 w-4 text-muted-foreground" />
                 </div>
-                <p className="text-sm text-muted-foreground">
-                  No sessions yet
-                </p>
+                <p className="text-sm text-muted-foreground">No sessions yet</p>
               </div>
             )}
           </CardContent>
