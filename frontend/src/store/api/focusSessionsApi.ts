@@ -1,12 +1,17 @@
 import { baseApi } from './baseApi';
-import { FocusSession, SessionStats } from '@/types/focus-session';
+import {
+  FocusSession,
+  SessionStats,
+  StartSessionParams,
+} from '@/types/focus-session';
 
 export const focusSessionsApi = baseApi.injectEndpoints({
   endpoints: builder => ({
-    startSession: builder.mutation<FocusSession, void>({
-      query: () => ({
+    startSession: builder.mutation<FocusSession, StartSessionParams | void>({
+      query: (params) => ({
         url: '/focus-sessions/start',
         method: 'POST',
+        body: params || {},
       }),
       invalidatesTags: [
         { type: 'FocusSession', id: 'ACTIVE' },

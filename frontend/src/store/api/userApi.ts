@@ -1,12 +1,23 @@
 import { baseApi } from './baseApi';
 
+export interface TimerPreferences {
+  defaultWorkDuration: number;
+  defaultBreakDuration: number;
+}
+
 export interface UserProfile {
   _id: string;
   name: string;
   email: string;
   themePreference: string;
+  timerPreferences: TimerPreferences;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface UpdateTimerPreferencesParams {
+  defaultWorkDuration?: number;
+  defaultBreakDuration?: number;
 }
 
 export const userApi = baseApi.injectEndpoints({
@@ -26,7 +37,22 @@ export const userApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: [{ type: 'User', id: 'PROFILE' }],
     }),
+    updateTimerPreferences: builder.mutation<
+      UserProfile,
+      UpdateTimerPreferencesParams
+    >({
+      query: preferences => ({
+        url: '/users/me/timer-preferences',
+        method: 'PATCH',
+        body: preferences,
+      }),
+      invalidatesTags: [{ type: 'User', id: 'PROFILE' }],
+    }),
   }),
 });
 
-export const { useGetProfileQuery, useUpdatePreferencesMutation } = userApi;
+export const {
+  useGetProfileQuery,
+  useUpdatePreferencesMutation,
+  useUpdateTimerPreferencesMutation,
+} = userApi;

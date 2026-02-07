@@ -1,3 +1,8 @@
+export enum SessionType {
+  POMODORO = 'pomodoro',
+  STOPWATCH = 'stopwatch',
+}
+
 export interface FocusSession {
   _id: string;
   userId: string;
@@ -5,6 +10,15 @@ export interface FocusSession {
   endTime: string | null;
   duration: number | null;
   isActive: boolean;
+  sessionType: SessionType;
+  targetDuration: number | null;
+  isBreak: boolean;
+}
+
+export interface StartSessionParams {
+  sessionType?: SessionType;
+  targetDuration?: number;
+  isBreak?: boolean;
 }
 
 export interface SessionStats {

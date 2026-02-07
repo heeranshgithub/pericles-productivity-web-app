@@ -1,3 +1,9 @@
+export const POMODORO_WORK_DURATION = 25 * 60;
+export const POMODORO_BREAK_DURATION = 5 * 60;
+
+export const MIN_DURATION_SECONDS = 60;
+export const MAX_DURATION_SECONDS = 240 * 60;
+
 export function formatDuration(seconds: number): string {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
