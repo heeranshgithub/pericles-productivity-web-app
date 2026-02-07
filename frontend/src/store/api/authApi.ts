@@ -11,6 +11,14 @@ interface RegisterRequest {
   name: string;
 }
 
+interface VerifyPasswordRequest {
+  password: string;
+}
+
+interface VerifyPasswordResponse {
+  valid: boolean;
+}
+
 interface AuthResponse {
   access_token: string;
   user: {
@@ -36,7 +44,14 @@ export const authApi = baseApi.injectEndpoints({
         body: userData,
       }),
     }),
+    verifyPassword: builder.mutation<VerifyPasswordResponse, VerifyPasswordRequest>({
+      query: (body) => ({
+        url: "/auth/verify-password",
+        method: "POST",
+        body,
+      }),
+    }),
   }),
 });
 
-export const { useLoginMutation, useRegisterMutation } = authApi;
+export const { useLoginMutation, useRegisterMutation, useVerifyPasswordMutation } = authApi;

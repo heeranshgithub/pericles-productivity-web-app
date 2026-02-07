@@ -66,6 +66,16 @@ export class AuthService {
     return this.login(userWithoutPassword);
   }
 
+  async verifyPassword(userId: string, password: string): Promise<{ valid: boolean }> {
+    const user = await this.usersService.findById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const valid = await this.usersService.validatePassword(password, user.password);
+    return { valid };
+  }
+
   async changePassword(userId: string, dto: { currentPassword: string; newPassword: string }) {
     const user = await this.usersService.findById(userId);
     if (!user) {

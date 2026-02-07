@@ -13,6 +13,7 @@ import { AuthService } from "./auth.service";
 import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
+import { VerifyPasswordDto } from "./dto/verify-password.dto";
 
 @Controller("auth")
 export class AuthController {
@@ -35,6 +36,16 @@ export class AuthController {
       throw new UnauthorizedException("Invalid credentials");
     }
     return this.authService.login(user);
+  }
+
+  @Post('verify-password')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async verifyPassword(
+    @Request() req: { user: { userId: string } },
+    @Body() dto: VerifyPasswordDto,
+  ) {
+    return this.authService.verifyPassword(req.user.userId, dto.password);
   }
 
   @Patch('change-password')

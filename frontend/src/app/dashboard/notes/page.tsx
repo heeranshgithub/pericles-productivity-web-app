@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { NoteItem } from '@/components/notes/NoteItem';
 import { NoteFormDialog } from '@/components/notes/NoteFormDialog';
 import { NoteViewDialog } from '@/components/notes/NoteViewDialog';
+import { PasswordPromptDialog } from '@/components/notes/PasswordPromptDialog';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
@@ -33,6 +34,9 @@ export default function NotesPage() {
   const [editingNote, setEditingNote] = useState<Note | null>(null);
   const [viewingNote, setViewingNote] = useState<Note | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
+  const [pendingNote, setPendingNote] = useState<Note | null>(null);
 
   const [createNote] = useCreateNoteMutation();
   const [updateNote] = useUpdateNoteMutation();
@@ -55,7 +59,7 @@ export default function NotesPage() {
     const openId = searchParams?.get('open');
     if (openId && notes.length) {
       const found = notes.find(n => n._id === openId);
-      if (found) setViewingNote(found);
+      if (found) handleNoteClick(found);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams?.toString(), notes]);
@@ -68,6 +72,24 @@ export default function NotesPage() {
       router.replace('/dashboard/notes');
     }
   }, [viewingNote, router]);
+
+  const handleNoteClick = useCallback((note: Note) => {
+    if (note.type === NoteType.PRIVATE && !isUnlocked) {
+      setPendingNote(note);
+      setShowPasswordPrompt(true);
+      return;
+    }
+    setViewingNote(note);
+  }, [isUnlocked]);
+
+  const handlePasswordSuccess = useCallback(() => {
+    setIsUnlocked(true);
+    setShowPasswordPrompt(false);
+    if (pendingNote) {
+      setViewingNote(pendingNote);
+      setPendingNote(null);
+    }
+  }, [pendingNote]);
 
   const handleCreate = async (data: {
     title: string;
@@ -215,9 +237,10 @@ export default function NotesPage() {
             <NoteItem
               key={note._id}
               note={note}
+              isUnlocked={isUnlocked}
               onEdit={handleEdit}
               onDelete={setDeleteId}
-              onClick={setViewingNote}
+              onClick={handleNoteClick}
             />
           ))}
         </div>
@@ -242,6 +265,13 @@ export default function NotesPage() {
           setEditingNote(note);
           setIsFormOpen(true);
         }}
+      />
+
+      {/* Password prompt for private notes */}
+      <PasswordPromptDialog
+        open={showPasswordPrompt}
+        onOpenChange={setShowPasswordPrompt}
+        onSuccess={handlePasswordSuccess}
       />
 
       {/* Delete confirmation */}
