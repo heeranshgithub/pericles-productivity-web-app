@@ -71,7 +71,11 @@ export function FocusTimerWidget() {
           </div>
         )}
         <Link href="/dashboard/timer">
-          <Button variant="outline" size="sm" className="w-full mt-3 gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full mt-3 gap-2"
+          >
             <Timer className="h-3.5 w-3.5" />
             Go to Timer
             <ArrowRight className="h-3.5 w-3.5" />
