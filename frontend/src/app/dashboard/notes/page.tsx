@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { NoteItem } from '@/components/notes/NoteItem';
 import { NoteFormDialog } from '@/components/notes/NoteFormDialog';
 import { NoteViewDialog } from '@/components/notes/NoteViewDialog';
@@ -25,6 +25,7 @@ import {
 import { Note, NoteType } from '@/types/note';
 import { toast } from 'sonner';
 import { Plus, StickyNote } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function NotesPage() {
   const [filter, setFilter] = useState<'all' | NoteType>('all');
@@ -46,6 +47,27 @@ export default function NotesPage() {
 
   const publicCount = notes.filter(n => n.type === NoteType.PUBLIC).length;
   const privateCount = notes.filter(n => n.type === NoteType.PRIVATE).length;
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  // If a note id is present in the URL as ?open=<id>, open that note once notes are loaded
+  useEffect(() => {
+    const openId = searchParams?.get('open');
+    if (openId && notes.length) {
+      const found = notes.find(n => n._id === openId);
+      if (found) setViewingNote(found);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams?.toString(), notes]);
+
+  // Keep the URL in sync with the currently viewed note
+  useEffect(() => {
+    if (viewingNote) {
+      router.replace(`/dashboard/notes?open=${viewingNote._id}`);
+    } else {
+      router.replace('/dashboard/notes');
+    }
+  }, [viewingNote, router]);
 
   const handleCreate = async (data: {
     title: string;

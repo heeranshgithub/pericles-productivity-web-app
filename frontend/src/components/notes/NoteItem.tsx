@@ -29,49 +29,45 @@ export function NoteItem({ note, onEdit, onDelete, onClick }: NoteItemProps) {
       className="p-4 transition-all hover:shadow-md cursor-pointer"
       onClick={() => onClick(note)}
     >
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-2">
-            {isPrivate ? (
-              <Lock className="h-4 w-4 text-amber-600" />
-            ) : (
-              <Globe className="h-4 w-4 text-teal-600" />
-            )}
-            <h3 className="font-semibold truncate">{note.title}</h3>
-            <Badge
-              variant={isPrivate ? 'secondary' : 'outline'}
-              className="ml-auto"
-            >
-              {isPrivate ? 'Private' : 'Public'}
-            </Badge>
-          </div>
+      <div className="flex items-center gap-2 mb-2">
+        {isPrivate ? (
+          <Lock className="h-4 w-4 text-amber-600" />
+        ) : (
+          <Globe className="h-4 w-4 text-teal-600" />
+        )}
+        <h3 className="font-semibold truncate flex-1">{note.title}</h3>
+        <Badge
+          variant={isPrivate ? 'secondary' : 'outline'}
+          className="shrink-0"
+        >
+          {isPrivate ? 'Private' : 'Public'}
+        </Badge>
+      </div>
 
-          <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
-            {preview}
-          </p>
+      <p className="text-sm text-muted-foreground line-clamp-2 mb-3 min-h-[2.5rem]">
+        {preview}
+      </p>
 
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground">
-              Updated{' '}
-              {formatDistanceToNow(new Date(note.updatedAt), {
-                addSuffix: true,
-              })}
-            </span>
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-xs text-muted-foreground">
+          Updated{' '}
+          {formatDistanceToNow(new Date(note.updatedAt), {
+            addSuffix: true,
+          })}
+        </span>
 
-            <div className="flex gap-2" onClick={e => e.stopPropagation()}>
-              <Button variant="ghost" size="sm" onClick={() => onEdit(note)}>
-                <Pencil className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => onDelete(note._id)}
-                className="text-destructive hover:text-destructive"
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
+        <div className="flex gap-2 shrink-0" onClick={e => e.stopPropagation()}>
+          <Button variant="ghost" size="sm" onClick={() => onEdit(note)}>
+            <Pencil className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onDelete(note._id)}
+            className="text-destructive hover:text-destructive"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
         </div>
       </div>
     </Card>

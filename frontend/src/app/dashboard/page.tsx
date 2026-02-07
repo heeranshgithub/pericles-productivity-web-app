@@ -118,8 +118,9 @@ export default function DashboardPage() {
             ) : stats?.notes.recent.length ? (
               <div className="space-y-3">
                 {stats.notes.recent.map(note => (
-                  <div
+                  <Link
                     key={note._id}
+                    href={`/dashboard/notes?open=${note._id}`}
                     className="flex items-start justify-between gap-4 p-3 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors duration-150"
                   >
                     <div className="min-w-0 flex-1">
@@ -140,7 +141,7 @@ export default function DashboardPage() {
                     >
                       {note.type}
                     </Badge>
-                  </div>
+                  </Link>
                 ))}
               </div>
             ) : (
