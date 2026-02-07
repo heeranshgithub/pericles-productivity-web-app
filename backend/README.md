@@ -1,98 +1,223 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Pericles Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+NestJS REST API for the Pericles productivity app. Provides task management, encrypted notes, focus session tracking, and user authentication.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Setup
 
-## Description
+### Prerequisites
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- Node.js v22.12.0
+- MongoDB instance (local or Atlas)
 
-## Project setup
+### Environment Variables
 
-```bash
-$ npm install
+Create a `.env` file in `backend/`:
+
+```env
+MONGODB_URI=your-mongodb-uri
+DB_NAME=pericles
+JWT_SECRET=your-64-char-hex-secret
+JWT_EXPIRATION=7d
+PORT=5000
+ENCRYPTION_KEY=your-64-char-hex-key
+SALT_ROUNDS=10
+API_V1_PREFIX=              # optional. keeping it empty for now. can be used later for versioning.
+DEMO_ACCOUNT_EMAIL=         # optional
+DEMO_ACCOUNT_PASSWORD=      # optional
 ```
 
-## Compile and run the project
+### Install & Run
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm install
+npm run start:dev     # development (watch mode)
+npm run build         # compile
+npm run start:prod    # production
 ```
 
-## Run tests
+### Scripts
 
-```bash
-# unit tests
-$ npm run test
+| Script        | Description                |
+| ------------- | -------------------------- |
+| `start:dev`   | Dev server with hot reload |
+| `start:debug` | Dev server with debugger   |
+| `build`       | Compile TypeScript         |
+| `start:prod`  | Run compiled build         |
+| `lint`        | ESLint                     |
+| `format`      | Prettier                   |
 
-# e2e tests
-$ npm run test:e2e
+---
 
-# test coverage
-$ npm run test:cov
+## Architecture
+
+```
+src/
+├── main.ts                    # Entry point, CORS, global pipes
+├── app.module.ts              # Root module
+├── auth/                      # JWT authentication (Passport)
+│   ├── strategies/            # jwt, local
+│   ├── guards/                # JwtAuthGuard, LocalAuthGuard
+│   └── dto/                   # register, login, change-password
+├── users/                     # User profiles & preferences
+│   ├── schemas/user.schema.ts
+│   └── dto/                   # update-preferences, update-timer-preferences
+├── tasks/                     # Task CRUD with status tracking
+│   ├── schemas/task.schema.ts
+│   └── dto/                   # create-task, update-task, query-tasks
+├── notes/                     # Notes with AES encryption for private notes
+│   ├── schemas/note.schema.ts
+│   └── dto/                   # create-note, update-note, query-notes
+├── focus-sessions/            # Pomodoro & stopwatch session tracking
+│   ├── schemas/focus-session.schema.ts
+│   └── dto/                   # start-session, end-session
+├── dashboard/                 # Aggregated stats endpoint
+└── encryption/                # AES encryption service (crypto-js)
 ```
 
-## Deployment
+### Key Design Decisions
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+- **Global ValidationPipe** with `whitelist`, `forbidNonWhitelisted`, and `transform` enabled
+- **JWT auth** via Passport with Bearer token extraction; 7-day expiration
+- **Password hashing** with bcryptjs (configurable salt rounds)
+- **Private notes** encrypted at rest using AES (crypto-js) with a server-side key
+- **CORS** configured for `http://localhost:3000` (frontend)
+- **Database indexes** on userId + status/type and userId + createdAt for all collections
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+---
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+## API Documentation
+
+All endpoints except `/auth/register` and `/auth/login` require a JWT Bearer token in the `Authorization` header.
+
+### Auth
+
+| Method | Endpoint                | Body                               | Description         |
+| ------ | ----------------------- | ---------------------------------- | ------------------- |
+| POST   | `/auth/register`        | `{ email, password, name }`        | Register a new user |
+| POST   | `/auth/login`           | `{ email, password }`              | Login, returns JWT  |
+| PATCH  | `/auth/change-password` | `{ currentPassword, newPassword }` | Change password     |
+
+**Response** (register/login):
+
+```json
+{
+  "access_token": "eyJhbG...",
+  "user": { "id": "...", "email": "...", "name": "..." }
+}
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### Users
 
-## Resources
+| Method | Endpoint                      | Body                                              | Description                          |
+| ------ | ----------------------------- | ------------------------------------------------- | ------------------------------------ |
+| GET    | `/users/me`                   | -                                                 | Get current user profile             |
+| PUT    | `/users/preferences`          | `{ themePreference }`                             | Update theme (`light` / `dark`)      |
+| PATCH  | `/users/me/timer-preferences` | `{ defaultWorkDuration?, defaultBreakDuration? }` | Update timer defaults (60-14400 sec) |
 
-Check out a few resources that may come in handy when working with NestJS:
+### Tasks
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+| Method | Endpoint            | Body / Query                        | Description             |
+| ------ | ------------------- | ----------------------------------- | ----------------------- |
+| POST   | `/tasks`            | `{ title, description? }`           | Create task             |
+| GET    | `/tasks`            | `?status=PENDING\|COMPLETED`        | List tasks (filterable) |
+| GET    | `/tasks/stats`      | -                                   | Get task counts         |
+| GET    | `/tasks/:id`        | -                                   | Get single task         |
+| PUT    | `/tasks/:id`        | `{ title?, description?, status? }` | Update task             |
+| PUT    | `/tasks/:id/toggle` | -                                   | Toggle task status      |
+| DELETE | `/tasks/:id`        | -                                   | Delete task             |
 
-## Support
+**Task statuses**: `PENDING`, `COMPLETED`
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Notes
 
-## Stay in touch
+| Method | Endpoint        | Body / Query                  | Description                 |
+| ------ | --------------- | ----------------------------- | --------------------------- |
+| POST   | `/notes`        | `{ title, content, type }`    | Create note                 |
+| GET    | `/notes`        | `?type=PUBLIC\|PRIVATE`       | List notes (filterable)     |
+| GET    | `/notes/recent` | -                             | Last 3 notes                |
+| GET    | `/notes/:id`    | -                             | Get single note (decrypted) |
+| PUT    | `/notes/:id`    | `{ title?, content?, type? }` | Update note                 |
+| DELETE | `/notes/:id`    | -                             | Delete note                 |
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+**Note types**: `PUBLIC`, `PRIVATE` (encrypted at rest)
 
-## License
+### Focus Sessions
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+| Method | Endpoint                 | Body                                                      | Description               |
+| ------ | ------------------------ | --------------------------------------------------------- | ------------------------- |
+| POST   | `/focus-sessions/start`  | `{ sessionType?, targetDuration?, isBreak?, startTime? }` | Start session             |
+| POST   | `/focus-sessions/end`    | `{ endTime? }`                                            | End active session        |
+| GET    | `/focus-sessions/active` | -                                                         | Get active session        |
+| GET    | `/focus-sessions/recent` | -                                                         | Last 3 completed sessions |
+| GET    | `/focus-sessions/stats`  | -                                                         | Session statistics        |
+| GET    | `/focus-sessions`        | -                                                         | List all sessions         |
+| DELETE | `/focus-sessions/:id`    | -                                                         | Delete session            |
+
+**Session types**: `POMODORO`, `STOPWATCH`
+
+**Stats response**:
+
+```json
+{
+  "totalSessions": 42,
+  "totalTime": 63000,
+  "averageTime": 1500,
+  "todaySessions": 3,
+  "todayTime": 4500
+}
+```
+
+### Dashboard
+
+| Method | Endpoint           | Description                                        |
+| ------ | ------------------ | -------------------------------------------------- |
+| GET    | `/dashboard/stats` | Aggregated stats across tasks, notes, and sessions |
+
+---
+
+## Database Schemas
+
+### User
+
+| Field                                 | Type              | Notes                  |
+| ------------------------------------- | ----------------- | ---------------------- |
+| email                                 | string            | unique, required       |
+| password                              | string            | bcrypt hashed          |
+| name                                  | string            | required               |
+| themePreference                       | `light` \| `dark` | default: `light`       |
+| timerPreferences.defaultWorkDuration  | number            | default: 1500 (25 min) |
+| timerPreferences.defaultBreakDuration | number            | default: 300 (5 min)   |
+
+### Task
+
+| Field       | Type                     | Notes              |
+| ----------- | ------------------------ | ------------------ |
+| userId      | ObjectId                 | ref: User          |
+| title       | string                   | max 200 chars      |
+| description | string                   | max 1000 chars     |
+| status      | `PENDING` \| `COMPLETED` | default: `PENDING` |
+
+### Note
+
+| Field       | Type                  | Notes                                 |
+| ----------- | --------------------- | ------------------------------------- |
+| userId      | ObjectId              | ref: User                             |
+| title       | string                | max 200 chars                         |
+| content     | string                | max 10000 chars, encrypted if private |
+| type        | `PUBLIC` \| `PRIVATE` | required                              |
+| isEncrypted | boolean               | auto-set based on type                |
+
+### FocusSession
+
+| Field          | Type                      | Notes                       |
+| -------------- | ------------------------- | --------------------------- |
+| userId         | ObjectId                  | ref: User                   |
+| startTime      | Date                      | required                    |
+| endTime        | Date \| null              | null while active           |
+| duration       | number \| null            | seconds, calculated on end  |
+| isActive       | boolean                   | one active session per user |
+| sessionType    | `POMODORO` \| `STOPWATCH` | default: `POMODORO`         |
+| targetDuration | number \| null            | seconds                     |
+| isBreak        | boolean                   | default: false              |
+
+All schemas include `createdAt` and `updatedAt` timestamps.
