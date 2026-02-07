@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { TasksModule } from './tasks/tasks.module';
 import { NotesModule } from './notes/notes.module';
 import { EncryptionModule } from './encryption/encryption.module';
+import { FocusSessionsModule } from './focus-sessions/focus-sessions.module';
 
 @Module({
   imports: [
@@ -13,13 +14,15 @@ import { EncryptionModule } from './encryption/encryption.module';
       isGlobal: true,
     }),
     MongooseModule.forRoot(
-      process.env.MONGODB_URI || 'mongodb://localhost:27017/pericles',
+      process.env.MONGODB_URI ||
+        `mongodb://localhost:27017/${process.env.DB_NAME || 'pericles'}`,
     ),
     AuthModule,
     UsersModule,
     TasksModule,
     NotesModule,
     EncryptionModule,
+    FocusSessionsModule,
   ],
 })
 export class AppModule {}

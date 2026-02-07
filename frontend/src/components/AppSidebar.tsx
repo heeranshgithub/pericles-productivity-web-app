@@ -11,6 +11,7 @@ import {
   LayoutDashboard,
   CheckSquare,
   StickyNote,
+  Timer,
   LogOut,
   PanelLeftClose,
   PanelLeftOpen,
@@ -33,6 +34,11 @@ const navItems = [
     label: 'Notes',
     href: '/dashboard/notes',
     icon: StickyNote,
+  },
+  {
+    label: 'Focus Timer',
+    href: '/dashboard/timer',
+    icon: Timer,
   },
 ];
 
