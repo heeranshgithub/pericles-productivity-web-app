@@ -6,7 +6,6 @@ import {
   ListTodo,
   StickyNote,
   BarChart3,
-  Zap,
 } from 'lucide-react';
 import Image from 'next/image';
 
@@ -38,7 +37,7 @@ export default function AuthBranding() {
     <div className="hidden lg:flex flex-col justify-between h-full bg-teal-950 dark:bg-teal-950/80 text-white p-12">
       <div>
         <div className="flex items-center gap-3 mb-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full border border-teal-400/30 bg-teal-500/20 overflow-hidden">
+          <div className="flex h-10 w-10 items-center justify-center rounded-md border border-teal-400/30 bg-teal-500/20 overflow-hidden">
             <Image src="/pericles.jpg" alt="Pericles" width={40} height={40} />
           </div>
           <h1 className="text-2xl font-bold tracking-tight">Pericles</h1>
