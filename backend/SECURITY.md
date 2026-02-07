@@ -2,52 +2,151 @@
 
 ## Authentication
 
-- **JWT Tokens**: 7-day expiration
-- **Password Hashing**: bcryptjs with 10 salt rounds
-- **Protected Routes**: All API endpoints require valid JWT
+### JWT Token System
+
+- **Library**: `@nestjs/passport` + `passport-jwt`
+- **Token type**: Bearer token via `Authorization` header
+- **Signing secret**: `JWT_SECRET` environment variable
+- **Expiration**: Configurable via `JWT_EXPIRATION` env var (default: `7d`)
+- **Payload**: `{ email, sub: userId }`
+- **Expiration validation**: Enabled (`ignoreExpiration: false`)
+
+### Guards
+
+| Guard | Strategy | Usage |
+|-------|----------|-------|
+| `JwtAuthGuard` | `jwt` | All protected endpoints |
+| `LocalAuthGuard` | `local` | Login endpoint only |
+
+`JwtAuthGuard` is applied at the controller level on all resource controllers (notes, tasks, focus sessions, dashboard, users).
+
+### Password Security
+
+- **Library**: bcryptjs v3.0.3
+- **Salt rounds**: Configurable via `SALT_ROUNDS` env var (default: `10`)
+- **Hashing**: Applied on registration and password change
+- **Comparison**: `bcrypt.compare()` for login and change-password validation
+- **Response sanitization**: Password field is stripped from all user responses before returning to the client
+
+### Auth Endpoints
+
+| Method | Route | Guard | Description |
+|--------|-------|-------|-------------|
+| `POST` | `/auth/register` | None | Create account |
+| `POST` | `/auth/login` | `LocalAuthGuard` | Authenticate and receive token |
+| `PATCH` | `/auth/change-password` | `JwtAuthGuard` | Update password (requires current password) |
+
+### Registration Validation (`RegisterDto`)
+
+- `email`: `@IsEmail()`, `@IsNotEmpty()`
+- `password`: `@IsString()`, `@IsNotEmpty()`, `@MinLength(6)`
+- `name`: `@IsString()`, `@IsNotEmpty()`
+- Duplicate email check throws `ConflictException`
+
+### Change Password Flow
+
+1. User submits current password and new password
+2. Current password validated against stored hash
+3. On mismatch: `BadRequestException('Current password is incorrect')`
+4. New password hashed and saved
+5. Returns `{ success: true }`
+
+---
+
+## Input Validation
+
+Global `ValidationPipe` applied in `main.ts`:
+
+```
+whitelist: true              // Strips unknown properties
+forbidNonWhitelisted: true   // Rejects requests with unknown properties
+transform: true              // Auto-transforms payloads to DTO instances
+```
+
+All endpoints use class-validator DTOs with explicit constraints:
+
+- Notes: `@MaxLength(200)` on title, `@MaxLength(10000)` on content, `@IsEnum(NoteType)` on type
+- Tasks: validated via DTOs with appropriate decorators
+- User preferences: theme restricted to `light`/`dark`, timer durations bounded (60-14400 seconds)
+
+---
+
+## CORS
+
+Configured in `main.ts`:
+
+- **Allowed origin**: `http://localhost:3000` (frontend)
+- **Credentials**: Enabled (cookies and auth headers permitted)
+
+---
 
 ## Private Note Encryption
-
-### Strategy
-
-Private notes are encrypted at rest using AES encryption before being stored in MongoDB.
 
 ### Implementation
 
 - **Algorithm**: AES (Advanced Encryption Standard)
-- **Library**: crypto-js
-- **Key Storage**: Environment variable (ENCRYPTION_KEY)
-- **Encryption Point**: Service layer, before database write
-- **Decryption Point**: Service layer, after database read
+- **Library**: crypto-js v4.2.0
+- **Service**: `EncryptionService` (injectable singleton)
+- **Key**: `ENCRYPTION_KEY` environment variable
+- **Schema flag**: `isEncrypted: boolean` on each note document
 
-### Flow
+### Encryption Flow
 
-1. User creates/updates private note
-2. Content is encrypted using AES with secret key
-3. Encrypted content stored in MongoDB
-4. On read, content is decrypted before returning to user
-5. Only the authenticated owner can decrypt their notes
+1. User creates or updates a note with `type: 'private'`
+2. `EncryptionService.encrypt()` applies `CryptoJS.AES.encrypt(text, key)`
+3. Ciphertext stored in MongoDB with `isEncrypted: true`
+4. On read, `decryptNoteIfNeeded()` checks the flag and decrypts before returning
+5. Decryption failure returns `'[Encrypted - Unable to decrypt]'` (logged, not thrown)
 
-### Key Management
+### Type Conversion Handling
 
-- Encryption key stored in environment variable
-- Minimum 32 characters required
-- Must be changed in production
-- Key rotation should be implemented for production systems
+When a note's type changes between public and private:
 
-### Threat Model
+1. Current content retrieved and decrypted if necessary
+2. Re-encrypted if converting to private, stored as plaintext if converting to public
+3. `isEncrypted` flag updated accordingly
 
-- ✅ Database breach: Notes remain encrypted
-- ✅ Unauthorized access: User isolation at API level
-- ✅ Token theft: Tokens expire after 7 days
-- ⚠️ Key compromise: All private notes would be vulnerable
-- ⚠️ Server memory dump: Decrypted notes in memory
+### Authorization
 
-### Best Practices
+- All note operations require `JwtAuthGuard`
+- Ownership check on read, update, and delete: `note.userId === requestUserId`
+- Violation throws `ForbiddenException('Access denied')`
 
-1. Use strong, random encryption key (minimum 32 characters)
-2. Store encryption key securely (environment variable, secrets manager)
-3. Implement key rotation strategy
-4. Monitor for unauthorized access attempts
-5. Regular security audits
-6. Consider client-side encryption for additional security
+### Database Indexes
+
+```
+NoteSchema.index({ userId: 1, type: 1 })
+NoteSchema.index({ userId: 1, createdAt: -1 })
+```
+
+---
+
+## Environment Variables (Security-Related)
+
+| Variable | Purpose | Default |
+|----------|---------|---------|
+| `JWT_SECRET` | JWT signing key | Dev fallback (must change in production) |
+| `JWT_EXPIRATION` | Token lifetime | `7d` |
+| `ENCRYPTION_KEY` | AES key for private notes | Dev fallback (must change in production) |
+| `SALT_ROUNDS` | bcryptjs hash rounds | `10` |
+| `MONGODB_URI` | Database connection | Local MongoDB |
+
+---
+
+## HTTP Exception Handling
+
+| Exception | Usage |
+|-----------|-------|
+| `UnauthorizedException` | Invalid credentials on login |
+| `BadRequestException` | Wrong current password on change-password |
+| `ForbiddenException` | Accessing another user's resources |
+| `NotFoundException` | Resource not found |
+| `ConflictException` | Duplicate email on registration |
+
+---
+
+## Future Enhancements (Encryption)
+
+- **Per-user encryption keys**: Derive keys from user credentials so server-side key compromise doesn't expose all notes
+- **Key rotation**: Re-encrypt notes when the encryption key is rotated, with versioned key tracking
+- **End-to-end encryption**: Move encrypt/decrypt to the client so plaintext never reaches the server
