@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 import { TaskItem } from '@/components/tasks/TaskItem';
 import { TaskFormDialog } from '@/components/tasks/TaskFormDialog';
@@ -36,7 +37,13 @@ import {
 } from 'lucide-react';
 
 export default function TasksPage() {
-  const [filter, setFilter] = useState<'all' | TaskStatus>('all');
+  const searchParams = useSearchParams();
+  const initialFilter = searchParams.get('filter');
+  const [filter, setFilter] = useState<'all' | TaskStatus>(
+    initialFilter === TaskStatus.PENDING || initialFilter === TaskStatus.COMPLETED
+      ? initialFilter
+      : 'all',
+  );
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
