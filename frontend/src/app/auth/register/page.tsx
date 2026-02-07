@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useLoginMutation, useRegisterMutation } from "@/store/api/authApi";
-import { useAppDispatch } from "@/store/hooks";
-import { setCredentials } from "@/store/slices/authSlice";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useLoginMutation, useRegisterMutation } from '@/store/api/authApi';
+import { useAppDispatch } from '@/store/hooks';
+import { setCredentials } from '@/store/slices/authSlice';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Card,
   CardHeader,
@@ -15,18 +15,18 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-} from "@/components/ui/card";
-import { toast } from "sonner";
-import Link from "next/link";
-import AuthBranding from "@/components/auth/AuthBranding";
+} from '@/components/ui/card';
+import { toast } from 'sonner';
+import Link from 'next/link';
+import AuthBranding from '@/components/auth/AuthBranding';
 
 const DEMO_EMAIL = process.env.NEXT_PUBLIC_DEMO_ACCOUNT_EMAIL;
 const DEMO_PASSWORD = process.env.NEXT_PUBLIC_DEMO_ACCOUNT_PASSWORD;
 
 export default function RegisterPage() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [register, { isLoading }] = useRegisterMutation();
@@ -37,7 +37,7 @@ export default function RegisterPage() {
     e.preventDefault();
 
     if (password.length < 6) {
-      toast.error("Password must be at least 6 characters");
+      toast.error('Password must be at least 6 characters');
       return;
     }
 
@@ -48,14 +48,14 @@ export default function RegisterPage() {
         setCredentials({
           user: result.user,
           token: result.access_token,
-        }),
+        })
       );
 
-      toast.success("Registration successful!");
-      router.push("/dashboard/tasks");
+      toast.success('Registration successful!');
+      router.push('/dashboard/tasks');
     } catch (error: unknown) {
       const err = error as { data?: { message?: string } };
-      toast.error(err.data?.message || "Registration failed");
+      toast.error(err.data?.message || 'Registration failed');
     }
   };
 
@@ -63,13 +63,18 @@ export default function RegisterPage() {
     if (!DEMO_EMAIL || !DEMO_PASSWORD) return;
     setIsDemoLoading(true);
     try {
-      const result = await login({ email: DEMO_EMAIL, password: DEMO_PASSWORD }).unwrap();
-      dispatch(setCredentials({ user: result.user, token: result.access_token }));
-      toast.success("Welcome to the demo!");
-      router.push("/dashboard/tasks");
+      const result = await login({
+        email: DEMO_EMAIL,
+        password: DEMO_PASSWORD,
+      }).unwrap();
+      dispatch(
+        setCredentials({ user: result.user, token: result.access_token })
+      );
+      toast.success('Welcome to the demo!');
+      router.push('/dashboard/tasks');
     } catch (error: unknown) {
       const err = error as { data?: { message?: string } };
-      toast.error(err.data?.message || "Demo login failed");
+      toast.error(err.data?.message || 'Demo login failed');
     } finally {
       setIsDemoLoading(false);
     }
@@ -89,10 +94,35 @@ export default function RegisterPage() {
               Join Pericles to boost your productivity
             </CardDescription>
           </CardHeader>
+          {DEMO_EMAIL && DEMO_PASSWORD && (
+            <CardContent className="pb-0">
+              <Button
+                type="button"
+                className="w-full h-12 text-sm font-semibold tracking-wide bg-teal-600 hover:bg-teal-700 text-white transition-colors duration-150"
+                disabled={isDemoLoading || isLoading}
+                onClick={handleDemoLogin}
+              >
+                {isDemoLoading ? 'Loading demo...' : 'Try Demo — No signup required'}
+              </Button>
+              <div className="relative w-full mt-4">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-border" />
+                </div>
+                <div className="relative flex justify-center text-xs">
+                  <span className="bg-card px-2 text-muted-foreground uppercase tracking-wider">
+                    or create account
+                  </span>
+                </div>
+              </div>
+            </CardContent>
+          )}
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name" className="text-xs font-medium tracking-wide">
+                <Label
+                  htmlFor="name"
+                  className="text-xs font-medium tracking-wide"
+                >
                   Name
                 </Label>
                 <Input
@@ -100,12 +130,15 @@ export default function RegisterPage() {
                   type="text"
                   placeholder="John Doe"
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={e => setName(e.target.value)}
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-xs font-medium tracking-wide">
+                <Label
+                  htmlFor="email"
+                  className="text-xs font-medium tracking-wide"
+                >
                   Email
                 </Label>
                 <Input
@@ -113,12 +146,15 @@ export default function RegisterPage() {
                   type="email"
                   placeholder="you@example.com"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={e => setEmail(e.target.value)}
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-xs font-medium tracking-wide">
+                <Label
+                  htmlFor="password"
+                  className="text-xs font-medium tracking-wide"
+                >
                   Password
                 </Label>
                 <Input
@@ -126,7 +162,7 @@ export default function RegisterPage() {
                   type="password"
                   placeholder="••••••••"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={e => setPassword(e.target.value)}
                   required
                 />
                 <p className="text-xs text-muted-foreground">
@@ -135,32 +171,15 @@ export default function RegisterPage() {
               </div>
             </CardContent>
             <CardFooter className="flex flex-col space-y-4">
-              <Button type="submit" className="w-full mt-2" disabled={isLoading}>
-                {isLoading ? "Creating account..." : "Create Account"}
+              <Button
+                type="submit"
+                className="w-full mt-2"
+                disabled={isLoading}
+              >
+                {isLoading ? 'Creating account...' : 'Create Account'}
               </Button>
-              {DEMO_EMAIL && DEMO_PASSWORD && (
-                <>
-                  <div className="relative w-full">
-                    <div className="absolute inset-0 flex items-center">
-                      <span className="w-full border-t border-border" />
-                    </div>
-                    <div className="relative flex justify-center text-xs">
-                      <span className="bg-card px-2 text-muted-foreground">or</span>
-                    </div>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    disabled={isDemoLoading || isLoading}
-                    onClick={handleDemoLogin}
-                  >
-                    {isDemoLoading ? "Loading demo..." : "Try Demo"}
-                  </Button>
-                </>
-              )}
               <p className="text-sm text-center text-muted-foreground">
-                Already have an account?{" "}
+                Already have an account?{' '}
                 <Link
                   href="/auth/login"
                   className="text-teal-600 hover:underline"
