@@ -12,6 +12,7 @@ import {
   CheckSquare,
   StickyNote,
   Timer,
+  Settings,
   LogOut,
   PanelLeftClose,
   PanelLeftOpen,
@@ -39,6 +40,11 @@ const navItems = [
     label: 'Focus Timer',
     href: '/dashboard/timer',
     icon: Timer,
+  },
+  {
+    label: 'Settings',
+    href: '/dashboard/settings',
+    icon: Settings,
   },
 ];
 

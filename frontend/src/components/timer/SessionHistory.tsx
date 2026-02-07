@@ -1,10 +1,11 @@
-'use client';
+ 'use client';
 
+import { useEffect, useState } from 'react';
 import { FocusSession } from '@/types/focus-session';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { formatDuration } from '@/lib/utils/timer';
+import { formatDuration, calculateElapsed } from '@/lib/utils/timer';
 import { Trash2, Clock } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -14,6 +15,17 @@ interface SessionHistoryProps {
 }
 
 export function SessionHistory({ sessions, onDelete }: SessionHistoryProps) {
+  const [tick, setTick] = useState(0);
+
+  // Keep a ticking state only while there's an active session so active durations update live.
+  useEffect(() => {
+    const hasActive = sessions.some(s => s.isActive);
+    if (!hasActive) return;
+
+    const id = setInterval(() => setTick(t => t + 1), 1000);
+    return () => clearInterval(id);
+  }, [sessions]);
+
   if (sessions.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border py-16 px-4">
@@ -38,7 +50,11 @@ export function SessionHistory({ sessions, onDelete }: SessionHistoryProps) {
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <span className="font-bold tabular-nums">
-                    {formatDuration(session.duration ?? 0)}
+                    {formatDuration(
+                      session.isActive
+                        ? calculateElapsed(session.startTime)
+                        : session.duration ?? 0
+                    )}
                   </span>
                   {session.isActive && <Badge variant="default">Active</Badge>}
                 </div>

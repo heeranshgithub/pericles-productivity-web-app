@@ -7,6 +7,7 @@ import { TasksModule } from './tasks/tasks.module';
 import { NotesModule } from './notes/notes.module';
 import { EncryptionModule } from './encryption/encryption.module';
 import { FocusSessionsModule } from './focus-sessions/focus-sessions.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { FocusSessionsModule } from './focus-sessions/focus-sessions.module';
     NotesModule,
     EncryptionModule,
     FocusSessionsModule,
+    DashboardModule,
   ],
 })
 export class AppModule {}
