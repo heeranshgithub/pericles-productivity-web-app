@@ -5,14 +5,12 @@ services:
     env: node
     plan: free
     rootDir: backend
-    buildCommand: npm install && npm run build
-    startCommand: npm run start:prod
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: node dist/main
     healthCheckPath: /health
     envVars:
       - key: NODE_VERSION
         value: 22.12.0
-      - key: NODE_ENV
-        value: production
       # sync:false means secrets are stored in the render dashboard
       - key: MONGODB_URI
         sync: false
@@ -37,13 +35,11 @@ services:
     env: node
     plan: free
     rootDir: frontend
-    buildCommand: npm install && npm run build
+    buildCommand: npm ci --include=dev && npm run build
     startCommand: npm run start
     envVars:
       - key: NODE_VERSION
         value: 22.12.0
-      - key: NODE_ENV
-        value: production
       - key: NEXT_PUBLIC_DEMO_ACCOUNT_EMAIL
         sync: false
       - key: NEXT_PUBLIC_DEMO_ACCOUNT_PASSWORD
