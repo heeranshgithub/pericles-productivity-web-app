@@ -1,9 +1,10 @@
 services:
   # NestJS Backend
   - type: web
-    name: pericles-backend
+    name: pericles-backend-singapore
     env: node
     plan: free
+    region: singapore
     rootDir: backend
     buildCommand: npm ci --include=dev && npm run build
     startCommand: node dist/main
@@ -31,9 +32,10 @@ services:
 
   # Next.js Frontend
   - type: web
-    name: pericles-frontend
+    name: pericles-frontend-singapore
     env: node
     plan: free
+    region: singapore
     rootDir: frontend
     buildCommand: npm ci --include=dev && npm run build
     startCommand: npm run start
@@ -46,7 +48,7 @@ services:
         sync: false
       - key: NEXT_PUBLIC_API_URL
         fromService:
-          name: pericles-backend
+          name: pericles-backend-singapore
           type: web
           property: host
       - key: NEXT_PUBLIC_API_V1_PREFIX
