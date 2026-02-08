@@ -37,6 +37,7 @@ export default function NotesPage() {
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
   const [pendingNote, setPendingNote] = useState<Note | null>(null);
+  const [pendingAction, setPendingAction] = useState<'view' | 'edit'>('view');
 
   const [createNote] = useCreateNoteMutation();
   const [updateNote] = useUpdateNoteMutation();
@@ -76,6 +77,7 @@ export default function NotesPage() {
   const handleNoteClick = useCallback((note: Note) => {
     if (note.type === NoteType.PRIVATE && !isUnlocked) {
       setPendingNote(note);
+      setPendingAction('view');
       setShowPasswordPrompt(true);
       return;
     }
@@ -86,10 +88,15 @@ export default function NotesPage() {
     setIsUnlocked(true);
     setShowPasswordPrompt(false);
     if (pendingNote) {
-      setViewingNote(pendingNote);
+      if (pendingAction === 'edit') {
+        setEditingNote(pendingNote);
+        setIsFormOpen(true);
+      } else {
+        setViewingNote(pendingNote);
+      }
       setPendingNote(null);
     }
-  }, [pendingNote]);
+  }, [pendingNote, pendingAction]);
 
   const handleCreate = async (data: {
     title: string;
@@ -120,10 +127,16 @@ export default function NotesPage() {
     }
   };
 
-  const handleEdit = (note: Note) => {
+  const handleEdit = useCallback((note: Note) => {
+    if (note.type === NoteType.PRIVATE && !isUnlocked) {
+      setPendingNote(note);
+      setPendingAction('edit');
+      setShowPasswordPrompt(true);
+      return;
+    }
     setEditingNote(note);
     setIsFormOpen(true);
-  };
+  }, [isUnlocked]);
 
   const handleDelete = async () => {
     if (!deleteId) return;
