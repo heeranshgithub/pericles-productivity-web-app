@@ -4,6 +4,7 @@ import { usePathname, useRouter } from 'next/navigation';
 
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { logout } from '@/store/slices/authSlice';
+import { baseApi } from '@/store/api/baseApi';
 import { useSidebar } from '@/components/SidebarContext';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -58,6 +59,7 @@ export function AppSidebar() {
 
   const handleLogout = () => {
     dispatch(logout());
+    dispatch(baseApi.util.resetApiState());
     router.push('/auth/login');
   };
 

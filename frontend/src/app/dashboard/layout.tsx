@@ -11,6 +11,7 @@ import { useIsMobile } from '@/hooks/useIsMobile';
 import { MOBILE_RESTRICTION_CONFIG } from '@/config/mobileRestriction.config';
 import { useAppDispatch } from '@/store/hooks';
 import { logout } from '@/store/slices/authSlice';
+import { baseApi } from '@/store/api/baseApi';
 import { toast } from 'sonner';
 
 /**
@@ -27,6 +28,7 @@ function MobileGuard({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (MOBILE_RESTRICTION_CONFIG.ENABLE_MOBILE_RESTRICTION && isMobile) {
       dispatch(logout());
+      dispatch(baseApi.util.resetApiState());
       toast.info(MOBILE_RESTRICTION_CONFIG.TOAST_MESSAGE);
       router.push('/auth/login');
     }
