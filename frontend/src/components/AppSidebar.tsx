@@ -80,8 +80,8 @@ export function AppSidebar() {
             collapsed && 'justify-center w-full'
           )}
         >
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground text-sm font-bold overflow-hidden">
-            <Image src="/pericles.jpg" alt="Pericles" width={84} height={84} />
+          <div className="flex h-8 w-8 items-center justify-center rounded-md border border-teal-400/30 bg-teal-500/20 overflow-hidden">
+            <Image src="/pericles.jpg" alt="Pericles" width={40} height={40} />
           </div>
           {!collapsed && (
             <span className="text-sm font-bold tracking-tight text-sidebar-foreground">

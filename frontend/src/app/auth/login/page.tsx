@@ -54,7 +54,7 @@ export default function LoginPage() {
       );
 
       toast.success('Login successful!');
-      router.push('/dashboard/tasks');
+      router.push('/dashboard');
     } catch (error: unknown) {
       const err = error as { data?: { message?: string } };
       toast.error(err.data?.message || 'Login failed');
@@ -73,7 +73,7 @@ export default function LoginPage() {
         setCredentials({ user: result.user, token: result.access_token })
       );
       toast.success('Welcome to the demo!');
-      router.push('/dashboard/tasks');
+      router.push('/dashboard');
     } catch (error: unknown) {
       const err = error as { data?: { message?: string } };
       toast.error(err.data?.message || 'Demo login failed');
