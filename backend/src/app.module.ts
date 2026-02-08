@@ -8,6 +8,7 @@ import { NotesModule } from './notes/notes.module';
 import { EncryptionModule } from './encryption/encryption.module';
 import { FocusSessionsModule } from './focus-sessions/focus-sessions.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
       },
       inject: [ConfigService],
     }),
+    HealthModule,
     AuthModule,
     UsersModule,
     TasksModule,
