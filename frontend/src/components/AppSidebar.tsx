@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { logout } from '@/store/slices/authSlice';
 import { baseApi } from '@/store/api/baseApi';
+import { useEndSessionMutation } from '@/store/api/focusSessionsApi';
 import { useSidebar } from '@/components/SidebarContext';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -56,8 +57,15 @@ export function AppSidebar() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { user } = useAppSelector(state => state.auth);
+  const [endSession] = useEndSessionMutation();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await endSession().unwrap();
+    } catch {
+      // Intentionally ignore errors (e.g., 404 if no active session) 
+      // to ensure logout proceeds regardless of timer state.
+    }
     dispatch(logout());
     dispatch(baseApi.util.resetApiState());
     router.push('/auth/login');
