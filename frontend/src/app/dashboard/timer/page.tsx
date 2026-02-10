@@ -35,6 +35,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Timer, Clock, Settings } from 'lucide-react';
+import { Label } from '@/components/ui/label';
 
 export default function TimerPage() {
   const [elapsed, setElapsed] = useState(0);
@@ -418,19 +419,19 @@ export default function TimerPage() {
               </div>
 
               <div className="flex items-center gap-2">
-                <input
+                <Input
                   type="checkbox"
                   id="saveAsDefault"
                   className="w-4 h-4 accent-teal-600"
                   checked={saveAsDefault}
                   onChange={e => setSaveAsDefault(e.target.checked)}
                 />
-                <label
+                <Label
                   htmlFor="saveAsDefault"
                   className="text-sm cursor-pointer"
                 >
                   Save as my default {customizingMode} duration
-                </label>
+                </Label>
               </div>
             </div>
 
