@@ -153,6 +153,22 @@ export default function TimerPage() {
         toast.error('Failed to save default');
       }
     }
+    // If currently using Pomodoro and there's no active session,
+    // start a new session immediately using the newly applied duration.
+    if (timerMode === SessionType.POMODORO && !activeSession) {
+      try {
+        const params: StartSessionParams = {
+          sessionType: SessionType.POMODORO,
+          targetDuration: seconds,
+          isBreak: customizingMode === 'break',
+        };
+
+        await startSession(params).unwrap();
+        toast.success('Focus session started!');
+      } catch {
+        toast.error('Failed to start session');
+      }
+    }
 
     setShowCustomModal(false);
   };
@@ -174,12 +190,8 @@ export default function TimerPage() {
 
       await startSession(params).unwrap();
       toast.success('Focus session started!');
-    } catch (err: unknown) {
-      const message =
-        err && typeof err === 'object' && 'data' in err
-          ? (err as { data?: { message?: string } }).data?.message
-          : undefined;
-      toast.error(message ?? 'Failed to start session');
+    } catch {
+      toast.error('Failed to start session');
     }
   };
 
@@ -189,12 +201,8 @@ export default function TimerPage() {
       toast.success(
         `Session completed: ${Math.floor((completed.duration ?? 0) / 60)} minutes`
       );
-    } catch (err: unknown) {
-      const message =
-        err && typeof err === 'object' && 'data' in err
-          ? (err as { data?: { message?: string } }).data?.message
-          : undefined;
-      toast.error(message ?? 'Failed to end session');
+    } catch {
+      toast.error('Failed to end session');
     }
   };
 
