@@ -10,20 +10,20 @@ run:
   runtime-version: 22.12.0
   command: node dist/main
   network:
-    port: 3000
+    port: 5000
   env:
     # Application
     - name: NODE_ENV
       value: production
-    
+
     # Backend Configuration
     - name: PORT
-      value: "5000"
+      value: '5000'
     - name: DB_NAME
       value: pericles
     - name: JWT_EXPIRATION
       value: 7d
     - name: API_V1_PREFIX
-      value: ""
+      value: ''
     - name: SALT_ROUNDS
-      value: "10"
+      value: '10'

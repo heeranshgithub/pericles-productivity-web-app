@@ -30,7 +30,7 @@ async function bootstrap() {
     }),
   );
 
-  const port = process.env.PORT || 5001;
+  const port = process.env.PORT || 5000;
   // Explicitly bind to 0.0.0.0 for cloud deployment compatibility (Render, Docker, etc.)
   await app.listen(port, '0.0.0.0');
   console.log(`Application is running on port: ${port}`);
