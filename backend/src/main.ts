@@ -2,8 +2,15 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
+import { SecretsService } from './secrets/secrets.service';
 
 async function bootstrap() {
+  // Load secrets from AWS Secrets Manager in production before app initialization
+  if (process.env.NODE_ENV === 'production') {
+    const secretsService = new SecretsService();
+    await secretsService.loadSecrets();
+  }
+
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
