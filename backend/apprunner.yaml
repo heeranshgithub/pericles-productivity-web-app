@@ -7,7 +7,7 @@ build:
     build:
       - npm run build
 run:
-  runtime-version: 22  # ← Just use major version, App Runner handles patches
+  runtime-version: 22.21.1  # ← Use exact version from AWS docs
   command: node dist/main
   network:
     port: 5000
