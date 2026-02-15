@@ -1,5 +1,7 @@
 version: 1.0
-runtime: nodejs22
+# Changed from nodejs22 to nodejs20 - AWS App Runner doesn't support Node.js 22 yet
+# Supported versions: nodejs16, nodejs18, nodejs20
+runtime: nodejs20
 build:
   commands:
     pre-build:
@@ -7,7 +9,8 @@ build:
     build:
       - npm run build
 run:
-  runtime-version: 22.12.0
+  # Changed from 22.12.0 to 20.11.1 - using supported Node.js 20 LTS version
+  runtime-version: 20.11.1
   command: node dist/main
   network:
     port: 5000
@@ -27,3 +30,10 @@ run:
       value: ''
     - name: SALT_ROUNDS
       value: '10'
+     # secret variables
+     - name: MONGODB_URI
+       value: 'arn:aws:secretsmanager:ap-south-1:325899476773:secret:pericles-backend/mongodb_uri-mWsfrr'
+     - name: JWT_SECRET
+       value: 'arn:aws:secretsmanager:ap-south-1:325899476773:secret:pericles-backend/jwt_secret-R3FEoV'
+     - name: ENCRYPTION_KEY
+       value: 'arn:aws:secretsmanager:ap-south-1:325899476773:secret:pericles-backend/encrytion-key-TRv49c'
