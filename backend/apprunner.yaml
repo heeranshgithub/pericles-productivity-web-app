@@ -1,7 +1,5 @@
 version: 1.0
-# Changed from nodejs22 to nodejs20 - AWS App Runner doesn't support Node.js 22 yet
-# Supported versions: nodejs16, nodejs18, nodejs20
-runtime: nodejs20
+runtime: nodejs22
 build:
   commands:
     pre-build:
@@ -9,8 +7,7 @@ build:
     build:
       - npm run build
 run:
-  # Changed from 22.12.0 to 20.11.1 - using supported Node.js 20 LTS version
-  runtime-version: 20.11.1
+  runtime-version: 22  # ← Just use major version, App Runner handles patches
   command: node dist/main
   network:
     port: 5000
