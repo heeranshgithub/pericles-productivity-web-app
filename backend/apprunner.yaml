@@ -7,7 +7,7 @@ build:
     build:
       - npm run build
 run:
-  runtime-version: 22.12.0  # Match package.json engines.node
+  runtime-version: 22.21.1  # ← Use exact version from AWS docs
   command: node dist/main
   network:
     port: 5000
