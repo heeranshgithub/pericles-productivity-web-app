@@ -29,8 +29,8 @@ run:
       value: '10'
     # secret variables
     - name: MONGODB_URI
-      value: 'arn:aws:secretsmanager:ap-south-1:325899476773:secret:pericles-backend/mongodb_uri-mWsfrr'
+      valueFrom: 'arn:aws:secretsmanager:ap-south-1:325899476773:secret:pericles-backend/mongodb_uri-mWsfrr'
     - name: JWT_SECRET
-      value: 'arn:aws:secretsmanager:ap-south-1:325899476773:secret:pericles-backend/jwt_secret-R3FEoV'
+      valueFrom: 'arn:aws:secretsmanager:ap-south-1:325899476773:secret:pericles-backend/jwt_secret-R3FEoV'
     - name: ENCRYPTION_KEY
-      value: 'arn:aws:secretsmanager:ap-south-1:325899476773:secret:pericles-backend/encrytion-key-TRv49c'
+      valueFrom: 'arn:aws:secretsmanager:ap-south-1:325899476773:secret:pericles-backend/encrytion-key-TRv49c'
