@@ -27,6 +27,10 @@ export class SecretsService {
       name: 'pericles-backend/encrytion-key',
       envKey: 'ENCRYPTION_KEY',
     },
+    {
+      name: 'pericles-backend/frontend_url',
+      envKey: 'FRONTEND_URL',
+    },
   ];
 
   constructor() {
