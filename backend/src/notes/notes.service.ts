@@ -2,9 +2,11 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
+  BadRequestException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
+import * as puppeteer from 'puppeteer';
 import { Note, NoteDocument, NoteType } from './schemas/note.schema';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
@@ -147,5 +149,37 @@ export class NotesService {
     }
 
     return noteObj;
+  }
+
+  async generatePdfFromHtml(htmlContent: string): Promise<Buffer> {
+    let browser;
+
+    try {
+      browser = await puppeteer.launch({
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      });
+
+      const page = await browser.newPage();
+      await page.setContent(htmlContent, {
+        waitUntil: 'networkidle0',
+      });
+
+      const pdfBuffer = await page.pdf({
+        format: 'A4',
+        printBackground: true,
+        margin: { top: '20px', right: '20px', bottom: '20px', left: '20px' },
+      });
+
+      return Buffer.from(pdfBuffer);
+    } catch (error) {
+      throw new BadRequestException(
+        `Failed to generate PDF: ${error.message}`,
+      );
+    } finally {
+      if (browser) {
+        await browser.close();
+      }
+    }
   }
 }

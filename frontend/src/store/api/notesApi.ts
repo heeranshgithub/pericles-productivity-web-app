@@ -62,6 +62,18 @@ export const notesApi = baseApi.injectEndpoints({
         { type: 'Note', id: 'RECENT' },
       ],
     }),
+
+    exportPdf: builder.mutation<
+      Blob,
+      { htmlContent: string; filename?: string }
+    >({
+      query: data => ({
+        url: '/notes/export-pdf',
+        method: 'POST',
+        body: data,
+        responseHandler: response => response.blob(),
+      }),
+    }),
   }),
 });
 
@@ -72,4 +84,5 @@ export const {
   useCreateNoteMutation,
   useUpdateNoteMutation,
   useDeleteNoteMutation,
+  useExportPdfMutation,
 } = notesApi;
