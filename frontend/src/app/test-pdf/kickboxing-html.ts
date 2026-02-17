@@ -1,202 +1,234 @@
 export const KICKBOXING_HTML = `<!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700&display=swap');
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IRON FIST | Kickboxing Academy</title>
+    <style>
+        /* --- General Reset & Fonts --- */
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Roboto:wght@300;400&display=swap');
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    body {
-      font-family: 'Geist Mono', monospace;
-      background: white;
-      color: #111;
-      padding: 40px;
-      line-height: 1.6;
-    }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #0a0a0a;
+            color: #fff;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
 
-    h1 {
-      font-size: 28px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      margin-bottom: 8px;
-    }
+        h1, h2, h3 {
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
 
-    h2 {
-      font-size: 18px;
-      font-weight: 600;
-      margin-top: 32px;
-      margin-bottom: 12px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid #e5e5e5;
-    }
+        /* --- Navigation --- */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 10%;
+            background: rgba(0,0,0,0.9);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid #e74c3c;
+        }
 
-    p { font-size: 14px; margin-bottom: 12px; }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #e74c3c;
+        }
 
-    .subtitle {
-      font-size: 13px;
-      color: #666;
-      margin-bottom: 32px;
-    }
+        .nav-links {
+            list-style: none;
+            display: flex;
+        }
 
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin-bottom: 32px;
-    }
+        .nav-links li {
+            margin-left: 30px;
+        }
 
-    .stat-card {
-      border: 1px solid #e5e5e5;
-      border-radius: 8px;
-      padding: 16px;
-    }
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s;
+        }
 
-    .stat-label {
-      font-size: 11px;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: #888;
-      margin-bottom: 4px;
-    }
+        .nav-links a:hover {
+            color: #e74c3c;
+        }
 
-    .stat-value {
-      font-size: 24px;
-      font-weight: 700;
-      font-variant-numeric: tabular-nums;
-    }
+        /* --- Hero Section --- */
+        .hero {
+            height: 90vh;
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
+                        url('https://images.unsplash.com/photo-1599058917233-97f394156059?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+        }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-      margin-top: 12px;
-    }
+        .hero h1 {
+            font-size: 5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+        }
 
-    th {
-      text-align: left;
-      font-size: 11px;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: #888;
-      padding: 8px 12px;
-      border-bottom: 1px solid #e5e5e5;
-    }
+        .hero p {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            max-width: 600px;
+        }
 
-    td {
-      padding: 10px 12px;
-      border-bottom: 1px solid #f0f0f0;
-    }
+        .btn {
+            padding: 15px 40px;
+            background: #e74c3c;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: 0.4s ease;
+            text-transform: uppercase;
+        }
 
-    .badge {
-      display: inline-block;
-      font-size: 11px;
-      font-weight: 500;
-      padding: 2px 8px;
-      border-radius: 9999px;
-      border: 1px solid #e5e5e5;
-    }
+        .btn:hover {
+            background: #c0392b;
+            transform: scale(1.05);
+        }
 
-    .badge-mastered { color: #059669; border-color: #a7f3d0; background: #ecfdf5; }
-    .badge-learning { color: #d97706; border-color: #fde68a; background: #fffbeb; }
-    .badge-drilling { color: #0d9488; border-color: #99f6e4; background: #f0fdfa; }
+        /* --- Features/Classes --- */
+        .section {
+            padding: 80px 10%;
+            text-align: center;
+        }
 
-    .footer {
-      margin-top: 40px;
-      padding-top: 16px;
-      border-top: 1px solid #e5e5e5;
-      font-size: 11px;
-      color: #aaa;
-    }
-  </style>
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            width: 80px;
+            height: 4px;
+            background: #e74c3c;
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background: #1a1a1a;
+            padding: 40px;
+            border-radius: 10px;
+            border: 1px solid #333;
+            transition: 0.3s;
+        }
+
+        .card:hover {
+            border-color: #e74c3c;
+            transform: translateY(-10px);
+        }
+
+        .card h3 {
+            margin-bottom: 15px;
+            color: #e74c3c;
+        }
+
+        /* --- Footer --- */
+        footer {
+            background: #000;
+            padding: 40px;
+            text-align: center;
+            border-top: 1px solid #333;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 3rem; }
+            .nav-links { display: none; }
+        }
+    </style>
 </head>
 <body>
-  <h1>Kickboxing Training Session</h1>
-  <p class="subtitle">Generated on February 16, 2026 — Pericles Combat</p>
 
-  <div class="stats-grid">
-    <div class="stat-card">
-      <p class="stat-label">Total Punches</p>
-      <p class="stat-value">1,248</p>
-    </div>
-    <div class="stat-card">
-      <p class="stat-label">Calories Burned</p>
-      <p class="stat-value">642 kcal</p>
-    </div>
-    <div class="stat-card">
-      <p class="stat-label">Active Time</p>
-      <p class="stat-value">1h 15m</p>
-    </div>
-  </div>
+    <nav>
+        <div class="logo">IRON FIST</div>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#classes">Classes</a></li>
+            <li><a href="#schedule">Schedule</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
 
-  <h2>Combinations Practiced</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Combination</th>
-        <th>Reps</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Jab - Cross - Left Hook - Low Kick</td>
-        <td>50</td>
-        <td><span class="badge badge-mastered">Mastered</span></td>
-      </tr>
-      <tr>
-        <td>Double Jab - Right Cross - Left Upper</td>
-        <td>40</td>
-        <td><span class="badge badge-drilling">Drilling</span></td>
-      </tr>
-      <tr>
-        <td>Check - Left Hook - Right Cross</td>
-        <td>30</td>
-        <td><span class="badge badge-learning">Learning</span></td>
-      </tr>
-      <tr>
-        <td>Teep - Step In - Elbow - Knee</td>
-        <td>25</td>
-        <td><span class="badge badge-drilling">Drilling</span></td>
-      </tr>
-      <tr>
-        <td>Slip - Right Uppercut - Left Hook</td>
-        <td>45</td>
-        <td><span class="badge badge-mastered">Mastered</span></td>
-      </tr>
-    </tbody>
-  </table>
+    <section class="hero" id="home">
+        <h1>TRAIN LIKE A PRO</h1>
+        <p>Master the art of striking. Build discipline, strength, and confidence with world-class instructors.</p>
+        <a href="#contact" class="btn">Start Your Trial</a>
+    </section>
 
-  <h2>Sparring Rounds</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Round</th>
-        <th>Duration</th>
-        <th>Intensity</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Round 1 (Technical)</td>
-        <td>3m 00s</td>
-        <td>Moderate</td>
-      </tr>
-      <tr>
-        <td>Round 2 (Hard Spar)</td>
-        <td>3m 00s</td>
-        <td>High</td>
-      </tr>
-      <tr>
-        <td>Round 3 (Clinch Work)</td>
-        <td>3m 00s</td>
-        <td>High</td>
-      </tr>
-    </tbody>
-  </table>
+    <section class="section" id="classes">
+        <h2 class="section-title">Our Programs</h2>
+        <div class="grid">
+            <div class="card">
+                <h3>Muay Thai</h3>
+                <p>The "Art of Eight Limbs." Learn to use knees, elbows, shins, and fists with devastating power.</p>
+            </div>
+            <div class="card">
+                <h3>K1 Kickboxing</h3>
+                <p>Fast-paced striking focusing on explosive movement, Dutch-style combinations, and footwork.</p>
+            </div>
+            <div class="card">
+                <h3>Cardio Blast</h3>
+                <p>High-intensity interval training (HIIT) combined with heavy bag work for maximum calorie burn.</p>
+            </div>
+        </div>
+    </section>
 
-  <p class="footer">Pericles — Combat Sports Performance Tracker</p>
+    <section class="section" style="background-color: #111;">
+        <h2 class="section-title">Why Iron Fist?</h2>
+        <div class="grid">
+            <div class="card" style="background: transparent; border: none;">
+                <h1 style="font-size: 3rem; color: #e74c3c;">500+</h1>
+                <p>Active Members</p>
+            </div>
+            <div class="card" style="background: transparent; border: none;">
+                <h1 style="font-size: 3rem; color: #e74c3c;">12</h1>
+                <p>Pro Trainers</p>
+            </div>
+            <div class="card" style="background: transparent; border: none;">
+                <h1 style="font-size: 3rem; color: #e74c3c;">24/7</h1>
+                <p>Gym Access</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 IRON FIST ACADEMY. No excuses, just results.</p>
+    </footer>
+
 </body>
 </html>\`;`;
