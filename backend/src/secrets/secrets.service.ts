@@ -31,6 +31,10 @@ export class SecretsService {
       name: 'pericles-backend/frontend_url',
       envKey: 'FRONTEND_URL',
     },
+    {
+      name: 'pericles-backend/frontend_url_dev',
+      envKey: 'FRONTEND_URL',
+    },
   ];
 
   constructor() {
@@ -74,8 +78,22 @@ export class SecretsService {
         throw new Error(`Secret ${config.name} has no SecretString value`);
       }
 
-      // Set the secret as an environment variable
-      process.env[config.envKey] = response.SecretString;
+      // Some env keys (like FRONTEND_URL) can intentionally aggregate multiple secrets.
+      // If the env var already exists, append the new value comma-separated (deduped).
+      const existingValue = process.env[config.envKey];
+      const nextValue = response.SecretString.trim();
+      if (!existingValue) {
+        process.env[config.envKey] = nextValue;
+      } else {
+        const parts = existingValue
+          .split(',')
+          .map((p) => p.trim())
+          .filter(Boolean);
+        if (!parts.includes(nextValue)) {
+          parts.push(nextValue);
+        }
+        process.env[config.envKey] = parts.join(',');
+      }
 
       this.logger.log(`✓ Loaded secret: ${config.envKey}`);
     } catch (error) {

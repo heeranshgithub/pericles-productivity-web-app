@@ -22,9 +22,15 @@ async function bootstrap() {
   }
 
   // Enable CORS for frontend
+  const frontendUrlRaw =
+    configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
+  const frontendOrigins = frontendUrlRaw
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
   app.enableCors({
-    origin:
-      configService.get<string>('FRONTEND_URL') || 'http://localhost:3000',
+    origin: frontendOrigins.length <= 1 ? frontendOrigins[0] : frontendOrigins,
     credentials: true,
   });
 
