@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLoginMutation, useRegisterMutation } from '@/store/api/authApi';
-import { useAppDispatch } from '@/store/hooks';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setCredentials } from '@/store/slices/authSlice';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -32,10 +32,21 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('');
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const { isAuthenticated, hydrated } = useAppSelector((state) => state.auth);
   const [register, { isLoading }] = useRegisterMutation();
   const [login] = useLoginMutation();
   const [isDemoLoading, setIsDemoLoading] = useState(false);
   const isMobile = useIsMobile();
+
+  useEffect(() => {
+    if (hydrated && isAuthenticated) {
+      router.replace('/dashboard');
+    }
+  }, [hydrated, isAuthenticated, router]);
+
+  if (hydrated && isAuthenticated) {
+    return <div className="min-h-screen bg-background" />;
+  }
 
   // Show mobile restriction message on mobile devices
   if (MOBILE_RESTRICTION_CONFIG.ENABLE_MOBILE_RESTRICTION && isMobile) {
