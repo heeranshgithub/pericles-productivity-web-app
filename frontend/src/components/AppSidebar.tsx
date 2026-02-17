@@ -18,6 +18,7 @@ import {
   LogOut,
   PanelLeftClose,
   PanelLeftOpen,
+  FileDown,
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -48,6 +49,11 @@ const navItems = [
     href: '/dashboard/settings',
     icon: Settings,
   },
+  {
+    label: 'PDF Export',
+    href: '/dashboard/test-pdf',
+    icon: FileDown,
+  },
 ];
 
 export function AppSidebar() {
@@ -63,7 +69,7 @@ export function AppSidebar() {
     try {
       await endSession().unwrap();
     } catch {
-      // Intentionally ignore errors (e.g., 404 if no active session) 
+      // Intentionally ignore errors (e.g., 404 if no active session)
       // to ensure logout proceeds regardless of timer state.
     }
     dispatch(logout());
