@@ -34,3 +34,7 @@ npm run dev             # http://localhost:3000
 
 - **[Backend](backend/README.md)** — Setup, API endpoints, database schemas, architecture
 - **[Frontend](frontend/README.md)** — Setup, Components, state management, routing
+
+## Demo
+
+Visit the live demo: https://main.d3k9rxmnuc1ssp.amplifyapp.com/
