@@ -485,7 +485,7 @@ function DetailPanel({
       </div>
 
       {/* Scrollable body */}
-      <div className="flex-1 overflow-y-auto p-5 space-y-6 text-[13px]">
+      <div className="flex-1 overflow-y-auto p-5 space-y-6 text-[13px] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
         {/* Strength score */}
         <div>
           <div className="flex items-center justify-between mb-2">
@@ -711,7 +711,7 @@ function OverviewPanel({ people: persons }: { people: Person[] }) {
   ).length;
 
   return (
-    <div className="flex flex-col h-full p-5 overflow-y-auto space-y-6 text-[13px]">
+    <div className="flex flex-col h-full p-5 overflow-y-auto space-y-6 text-[13px] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
       {/* Title */}
       <div>
         <h2 className="text-sm font-bold tracking-[0.2em] text-white/25 uppercase">
