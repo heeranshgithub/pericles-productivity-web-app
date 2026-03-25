@@ -622,7 +622,7 @@ function Leaderboard({
   );
 
   return (
-    <div className="hidden lg:flex flex-col w-[260px] flex-shrink-0 border-r border-white/[0.06] px-4 py-5 gap-4 overflow-y-auto text-[13px]">
+    <div className="hidden lg:flex flex-col w-[260px] flex-shrink-0 border-r border-white/[0.06] px-4 py-5 gap-4 overflow-y-auto text-[13px] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
       <div>
         <h2 className="text-[11px] font-bold tracking-[0.22em] text-white/35 uppercase">
           Leaderboard
